@@ -5,8 +5,8 @@ import time
 import pytest
 import requests
 
-import web
-from website import Website
+import brainstorm.web
+from brainstorm.website import Website
 
 
 _ADDRESS = '127.0.0.1', 8000
@@ -29,14 +29,17 @@ def website():
 
 def run_website():
     website = Website()
+
     @website.route('/')
     def index():
         return 200, 'users list'
+
     @website.route('/users/([0-9]+)')
     def user(user_id):
         if user_id not in ['1', '2']:
             return 404, ''
         return 200, f'user {user_id}'
+
     website.run(_ADDRESS)
 
 
@@ -73,8 +76,12 @@ def test_web():
     try:
         response = requests.get(_URL)
         for user_dir in _DATA_DIR.iterdir():
+            if user_dir.name.startswith('.'):
+                continue
             assert f'user {user_dir.name}' in response.text
         for user_dir in _DATA_DIR.iterdir():
+            if user_dir.name.startswith('.'):
+                continue
             response = requests.get(f'{_URL}/users/{user_dir.name}')
             assert f'User {user_dir.name}' in response.text
             for thought_file in user_dir.iterdir():
@@ -84,4 +91,4 @@ def test_web():
 
 
 def run_webserver():
-    web.run_webserver(_ADDRESS, _DATA_DIR)
+    brainstorm.web.run_webserver(_ADDRESS, _DATA_DIR)

@@ -3,7 +3,7 @@ import time
 
 import pytest
 
-from listener import Listener
+from brainstorm.utils import Listener
 
 
 _PORT = 1234
@@ -33,7 +33,8 @@ def test_defaults():
 
 
 def test_repr(listener):
-    assert repr(listener) == f'Listener(port={_PORT!r}, host={_HOST!r}, backlog={_BACKLOG!r}, reuseaddr={_REUSEADDR!r})'
+    assert repr(listener) == f'Listener(port={_PORT!r}, host={_HOST!r}, ' \
+                             f'backlog={_BACKLOG!r}, reuseaddr={_REUSEADDR!r})'
 
 
 def test_close(listener):

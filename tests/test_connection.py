@@ -3,7 +3,7 @@ import time
 
 import pytest
 
-from connection import Connection
+from brainstorm.utils import Connection
 
 
 _PORT = 1234
@@ -28,7 +28,8 @@ def test_repr(server):
     sock.connect(('127.0.0.1', _PORT))
     connection = Connection(sock)
     _, other_port = sock.getsockname()
-    assert repr(connection) == f'<Connection from 127.0.0.1:{other_port} to 127.0.0.1:{_PORT}>'
+    assert repr(connection) == \
+        f'<Connection from 127.0.0.1:{other_port} to 127.0.0.1:{_PORT}>'
 
 
 def test_close(server):
@@ -97,5 +98,5 @@ def test_context_manager(server):
 
 
 def test_connect(server):
-    with  Connection.connect('127.0.0.1', _PORT) as connection:
+    with Connection.connect('127.0.0.1', _PORT):
         server.accept()

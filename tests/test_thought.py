@@ -1,15 +1,17 @@
 import datetime as dt
-import struct
 
 import pytest
 
-from thought import Thought
+from brainstorm.thought import Thought
 
 
 user_id = 1
 datetime = dt.datetime(2000, 1, 1, 12, 0)
 thought = "I'm hungry"
-serialized = b"\x01\x00\x00\x00\x00\x00\x00\x00 \xd0m8\x00\x00\x00\x00\n\x00\x00\x00I'm hungry"
+serialized = b"\x01\x00\x00\x00\x00\x00\x00\x00" \
+             b"\x20\xd0\x6d\x38\x00\x00\x00\x00" \
+             b"\x0a\x00\x00\x00" \
+             b"I'm hungry"
 
 
 @pytest.fixture
@@ -24,11 +26,13 @@ def test_attributes(t):
 
 
 def test_repr(t):
-    assert repr(t) == f'Thought(user_id={user_id!r}, timestamp={datetime!r}, thought={thought!r})'
+    assert repr(t) == f'Thought(user_id={user_id!r}, timestamp={datetime!r},' \
+        f' thought={thought!r})'
 
 
 def test_str(t):
-    assert str(t) == f'[{datetime:%Y-%m-%d %H:%M:%S}] user {user_id}: {thought}'
+    assert str(t) == \
+        f'[{datetime:%Y-%m-%d %H:%M:%S}] user {user_id}: {thought}'
 
 
 def test_eq(t):
@@ -42,7 +46,9 @@ def test_eq(t):
     assert t4 != t
     t5 = 1
     assert t5 != t
-    t6 = lambda: None
+
+    def t6():
+        pass
     t6.user_id = user_id
     t6.timestamp = datetime
     t6.thought = thought

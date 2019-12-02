@@ -10,25 +10,28 @@ import time
 
 import pytest
 
-from cli import CommandLineInterface
+from brainstorm.cli import CommandLineInterface
 
 
 _SERVER_ADDRESS = '127.0.0.1', 5000
 _SERVER_BACKLOG = 1000
 _ROOT = pathlib.Path(__file__).absolute().parent.parent / 'brainstorm'
-_SERVER_PATH = _ROOT / 'server.py'
-_CLIENT_PATH = _ROOT / 'client.py'
+_SERVER_CMD = 'run_server'
+_CLIENT_CMD = 'upload_thought'
 
 
 @pytest.fixture
 def cli():
     cli = CommandLineInterface()
+
     @cli.command
     def inc(x):
         print(int(x) + 1)
+
     @cli.command
     def add(x, y):
         print(int(x) + int(y))
+
     return cli
 
 
@@ -96,15 +99,20 @@ def test_client():
     try:
         time.sleep(0.1)
         host, port = _SERVER_ADDRESS
+        base_cmd = ['python', '-m', _ROOT.name, _CLIENT_CMD]
+        args = [f'{host}:{port}', '1', "I'm hungry"]
         process = subprocess.Popen(
-            ['python', _CLIENT_PATH, f'{host}:{port}', '1', "I'm hungry"],
-            stdout = subprocess.PIPE,
+            base_cmd + args,
+            stdout=subprocess.PIPE,
         )
         stdout, _ = process.communicate()
         assert b'usage' in stdout.lower()
+
+        arg_names = ['address', 'user', 'thought']
+        named_args = [f'{name}={val}' for name, val in zip(arg_names, args)]
         process = subprocess.Popen(
-            ['python', _CLIENT_PATH, 'upload', f'address={host}:{port}', f'user=1', f"thought=I'm hungry"],
-            stdout = subprocess.PIPE,
+            base_cmd + named_args,
+            stdout=subprocess.PIPE,
         )
         stdout, _ = process.communicate()
         assert b'done' in stdout.lower()
@@ -129,15 +137,20 @@ def run_server():
 
 def test_server():
     host, port = _SERVER_ADDRESS
+    base_cmd = ['python', '-m', _ROOT.name, _SERVER_CMD]
+    args = [f'{host}:{port}', 'data/']
     process = subprocess.Popen(
-        ['python', _SERVER_PATH, f'{host}:{port}', 'data/'],
-        stdout = subprocess.PIPE,
+        base_cmd + args,
+        stdout=subprocess.PIPE,
     )
     stdout, _ = process.communicate()
     assert b'usage' in stdout.lower()
+
+    arg_names = ['address', 'data']
+    named_args = [f'{name}={val}' for name, val in zip(arg_names, args)]
     process = subprocess.Popen(
-        ['python', _SERVER_PATH, 'run', f'address={host}:{port}', 'data=data/'],
-        stdout = subprocess.PIPE,
+        base_cmd + named_args,
+        stdout=subprocess.PIPE,
     )
     thread = threading.Thread(target=process.communicate)
     thread.start()
@@ -153,7 +166,8 @@ def test_server():
 
 @contextlib.contextmanager
 def _argv(*args):
-    command = lambda: None
+    def command():
+        pass
     command.exit_code = 0
     try:
         argv = sys.argv[1:]
