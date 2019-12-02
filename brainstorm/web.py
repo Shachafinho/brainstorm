@@ -4,6 +4,7 @@ from datetime import datetime
 from http.server import HTTPStatus
 from pathlib import Path
 
+from cli import CommandLineInterface
 from website import Website
 
 
@@ -47,6 +48,10 @@ THOUGHT_LINE_HTML = '''
 '''
 
 
+cli = CommandLineInterface()
+
+
+@cli.command
 def run_webserver(address, data_dir):
     website = Website()
 
@@ -56,7 +61,8 @@ def run_webserver(address, data_dir):
     @website.route('/')
     def handle_index_page():
         # Obtain all users in the system.
-        users = [user_dir.name for user_dir in Path(data_dir).iterdir()]
+        users = [user_dir.name for user_dir in Path(data_dir).iterdir()
+                 if not user_dir.name.startswith('.')]
 
         # Generate an html line for each user.
         user_lines_html = sorted(
@@ -102,7 +108,8 @@ def run_webserver(address, data_dir):
 
 
     # Run the website.
-    website.run(address)
+    ip, port = address.split(':')
+    website.run((ip, int(port)))
 
 
 def main(argv):
@@ -120,5 +127,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    import sys
-    sys.exit(main(sys.argv))
+    cli.main()
