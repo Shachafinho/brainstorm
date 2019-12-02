@@ -1,6 +1,5 @@
+import datetime as dt
 import struct
-
-from datetime import datetime
 
 
 class Thought:
@@ -59,7 +58,7 @@ class Thought:
         # Extract thought header from bytes.
         user_id, timestamp, thought_size = \
             struct.unpack(Thought.HEADER_FORMAT, header_bytes)
-        return user_id, datetime.fromtimestamp(timestamp), thought_size
+        return user_id, dt.datetime.fromtimestamp(timestamp), thought_size
 
     @classmethod
     def deserialize_data(cls, data_bytes):

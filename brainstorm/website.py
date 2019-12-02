@@ -1,8 +1,7 @@
 import functools
+import http.server
 
-from http.server import ThreadingHTTPServer
-
-from custom_http_request_handler import CustomHTTPRequestHandler
+from brainstorm.custom_http_request_handler import CustomHTTPRequestHandler
 
 
 class Website:
@@ -22,5 +21,5 @@ class Website:
             CustomHTTPRequestHandler, self.path_handlers)
 
         # Run the server.
-        server = ThreadingHTTPServer(address, request_handler_cls)
+        server = http.server.ThreadingHTTPServer(address, request_handler_cls)
         server.serve_forever()

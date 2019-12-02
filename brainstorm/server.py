@@ -1,14 +1,8 @@
+import pathlib
 import threading
 
-from datetime import datetime
-from pathlib import Path
-
-from cli import CommandLineInterface
-from listener import Listener
-from thought import Thought
-
-
-cli = CommandLineInterface()
+from brainstorm.thought import Thought
+from brainstorm.utils import Listener
 
 
 class Handler(threading.Thread):
@@ -43,7 +37,7 @@ class Handler(threading.Thread):
         datetime_str = timestamp.strftime('%Y-%m-%d_%H-%M-%S')
 
         # Return the full path.
-        return Path(self.data_dir, str(user_id), datetime_str + '.txt')
+        return pathlib.Path(self.data_dir, str(user_id), datetime_str + '.txt')
 
     def write_to_file(self, thought):
         file_path = self.get_file_path(thought.user_id, thought.timestamp)
@@ -62,17 +56,6 @@ class Handler(threading.Thread):
                 f.write(text_to_write)
 
 
-@cli.command
-def run(address, data):
-    if ':' in address:
-        ip, port = address.split(':')
-    else:
-        # Assume the supplied address consists of port only.
-        ip, port = None, int(address)
-
-    run_server((ip, port), data)
-
-
 def run_server(address, data_dir):
     ip, port = address
     listener = Listener(port, ip) if ip else Listener(port)
@@ -83,7 +66,3 @@ def run_server(address, data_dir):
             connection = listener.accept()
             handler = Handler(connection, data_dir, lock)
             handler.start()
-
-
-if __name__ == '__main__':
-    cli.main()

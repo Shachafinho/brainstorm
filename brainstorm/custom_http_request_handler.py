@@ -1,8 +1,8 @@
-from http.server import HTTPStatus, SimpleHTTPRequestHandler
+import http.server
 import re
 
 
-class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
+class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, path_handlers, *args, **kwargs):
         self.path_handlers = path_handlers
         super().__init__(*args, **kwargs)
@@ -29,4 +29,4 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
                 return
 
         # Errors default to 404 with no data.
-        self.send_html(HTTPStatus.NOT_FOUND, '')
+        self.send_html(http.server.HTTPStatus.NOT_FOUND, '')

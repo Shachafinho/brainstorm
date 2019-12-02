@@ -1,6 +1,6 @@
 import socket
 
-from connection import Connection
+from brainstorm.utils import Connection
 
 
 class Listener:

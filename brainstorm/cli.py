@@ -1,5 +1,4 @@
 import inspect
-
 import sys
 
 
@@ -39,7 +38,7 @@ class CommandLineInterface:
         missing_mandatories = mandatories - set(command_args.keys())
         if missing_mandatories:
             raise RuntimeError('Missing mandatory arguments: '
-                f'{" ".join(sorted(missing_mandatories))}')
+                               f'{" ".join(sorted(missing_mandatories))}')
 
         # Check for any unknown arguments.
         supported_args = set(optionals.keys()) | mandatories

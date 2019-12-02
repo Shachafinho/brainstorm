@@ -1,11 +1,8 @@
-import functools
+import datetime as dt
+import http.server
+import pathlib
 
-from datetime import datetime
-from http.server import HTTPStatus
-from pathlib import Path
-
-from cli import CommandLineInterface
-from website import Website
+from brainstorm.website import Website
 
 
 INDEX_PAGE_HTML = '''
@@ -48,20 +45,15 @@ THOUGHT_LINE_HTML = '''
 '''
 
 
-cli = CommandLineInterface()
-
-
-@cli.command
 def run_webserver(address, data_dir):
     website = Website()
-
 
     # Add website handlers.
 
     @website.route('/')
     def handle_index_page():
         # Obtain all users in the system.
-        users = [user_dir.name for user_dir in Path(data_dir).iterdir()
+        users = [user_dir.name for user_dir in pathlib.Path(data_dir).iterdir()
                  if not user_dir.name.startswith('.')]
 
         # Generate an html line for each user.
@@ -73,12 +65,11 @@ def run_webserver(address, data_dir):
             INDEX_PAGE_HTML.format(user_lines='\n'.join(user_lines_html))
 
         # Return the generated page.
-        return HTTPStatus.OK, index_page_html
-
+        return http.server.HTTPStatus.OK, index_page_html
 
     @website.route('/users/([0-9]+)')
     def handle_user_page(user_id):
-        user_dir = Path(data_dir).joinpath(str(user_id))
+        user_dir = pathlib.Path(data_dir).joinpath(str(user_id))
 
         # Obtain all user's thoughts.
         thought_lines_html = []
@@ -86,7 +77,7 @@ def run_webserver(address, data_dir):
             # Thought file's name represents the timestamp, but its format
             # must be reconfigured.
             datetime_obj = \
-                datetime.strptime(thought_file.stem, '%Y-%m-%d_%H-%M-%S')
+                dt.datetime.strptime(thought_file.stem, '%Y-%m-%d_%H-%M-%S')
             datetime_str = datetime_obj.strftime('%Y-%m-%d %H:%M:%S')
 
             # Read the file to collect its thoughts.
@@ -104,13 +95,7 @@ def run_webserver(address, data_dir):
             user_id=user_id, thought_lines='\n'.join(thought_lines_html))
 
         # Return the generated page.
-        return HTTPStatus.OK, user_page_html
-
+        return http.server.HTTPStatus.OK, user_page_html
 
     # Run the website.
-    ip, port = address.split(':')
-    website.run((ip, int(port)))
-
-
-if __name__ == '__main__':
-    cli.main()
+    website.run(address)
