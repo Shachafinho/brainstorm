@@ -112,19 +112,5 @@ def run_webserver(address, data_dir):
     website.run((ip, int(port)))
 
 
-def main(argv):
-    if len(argv) != 3:
-        print(f'USAGE: {argv[0]} <ip_address:port> <data_dir>')
-        return 1
-    try:
-        ip, port = argv[1].split(':')
-        address = (ip, int(port))
-
-        run_webserver(address, argv[2])
-    except Exception as error:
-        print(f'ERROR: {error}')
-        return 1
-
-
 if __name__ == '__main__':
     cli.main()

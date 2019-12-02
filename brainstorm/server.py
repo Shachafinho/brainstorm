@@ -64,18 +64,24 @@ class Handler(threading.Thread):
 
 @cli.command
 def run(address, data):
-    if ':' not in address:
-        # Assume the supplied address consists of port only.
-        listener = Listener(int(address))
-    else:
+    if ':' in address:
         ip, port = address.split(':')
-        listener = Listener(int(port), ip)
+    else:
+        # Assume the supplied address consists of port only.
+        ip, port = None, int(address)
+
+    run_server((ip, port), data)
+
+
+def run_server(address, data_dir):
+    ip, port = address
+    listener = Listener(port, ip) if ip else Listener(port)
 
     lock = threading.RLock()
     with listener:
         while True:
             connection = listener.accept()
-            handler = Handler(connection, data, lock)
+            handler = Handler(connection, data_dir, lock)
             handler.start()
 
 

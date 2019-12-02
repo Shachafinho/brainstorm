@@ -15,9 +15,13 @@ def upload(address, user, thought):
     ip, port = address.split(':')
     user_id = int(user)
 
+    upload_thought((ip, int(port)), user_id, thought)
+
+
+def upload_thought(address, user, thought):
     # Send the thought to the server.
-    with Connection.connect(ip, int(port)) as connection:
-        connection.send(Thought(user_id, datetime.now(), thought).serialize())
+    with Connection.connect(address) as connection:
+        connection.send(Thought(user, datetime.now(), thought).serialize())
 
     print('done')
 
