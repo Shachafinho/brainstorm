@@ -9,7 +9,7 @@ user_id = 1
 datetime = dt.datetime(2000, 1, 1, 12, 0)
 thought = "I'm hungry"
 serialized = b"\x01\x00\x00\x00\x00\x00\x00\x00" \
-             b"\x20\xd0\x6d\x38\x00\x00\x00\x00" \
+             b"\x40\xec\x6d\x38\x00\x00\x00\x00" \
              b"\x0a\x00\x00\x00" \
              b"I'm hungry"
 

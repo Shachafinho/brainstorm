@@ -32,9 +32,9 @@ class Thought:
         # * 8 bytes (uint64) of user ID
         # * 8 bytes (uint64) of timestamp
         # * 4 bytes (uint32) of the thought's length
-        timestamp_num = int(self.timestamp.timestamp())
+        utc_timestamp = self.timestamp.replace(tzinfo=dt.timezone.utc)
         return struct.pack(Thought.HEADER_FORMAT, self.user_id,
-                           timestamp_num, len(self.thought))
+                           int(utc_timestamp.timestamp()), len(self.thought))
 
     def serialize_data(self):
         return self.thought.encode()
@@ -58,7 +58,7 @@ class Thought:
         # Extract thought header from bytes.
         user_id, timestamp, thought_size = \
             struct.unpack(Thought.HEADER_FORMAT, header_bytes)
-        return user_id, dt.datetime.fromtimestamp(timestamp), thought_size
+        return user_id, dt.datetime.utcfromtimestamp(timestamp), thought_size
 
     @classmethod
     def deserialize_data(cls, data_bytes):
