@@ -61,12 +61,49 @@ The `brainstorm` package also provides the following functions, which can be inv
 
     Run the centralized thoughts server, which accepts and records users' thoughts.
 
+    CLI invocation:
+
+    ```sh
+    $ python -m brainstorm run-server [-a <address>] [-d <data_directory>]
+    # Server awaits clients' requests...
+    ```
+
+    For example, if we wish the server to listen on 127.0.0.1 port 5555, and store incoming thoughts in `data_directory`, we run:
+
+    ```sh
+    $ python -m brainstorm run-server -a 127.0.0.1 5555 -d data_directory
+    ```
+
 * `run_webserver`
 
     Run the webserver at a given address, bound to a specified thoughts data directory.
 
     The webserver showcases all users in the system, each with its own collection of thoughts.
 
+    CLI invocation:
+
+    ```sh
+    python -m brainstorm run-webserver [-a <address>] [-d <data_directory>]
+    ```
+
+    For example, if we wish the server to listen on 127.0.0.1 port 8888, and expose users' thoughts stored in `data_directory`, we run:
+
+    ```sh
+    $ python -m brainstorm run-webserver -a 127.0.0.1 8888 -d data_directory
+    ```
+
 * `upload_thought`
 
     Send a user's thought to the server.
+
+    CLI invocation:
+
+    ```sh
+    python -m brainstorm upload-thought [-a <address>] -u <user_id> -t <thought>
+    ```
+
+    For example, if we wish to send *Hello world* by user *1* to the server at 127.0.0.1 port 5555, we run:
+
+    ```sh
+    $ python -m brainstorm upload-thought -a 127.0.0.1 5555 -u 1 -t "Hello world"
+    ```

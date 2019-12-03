@@ -7,5 +7,6 @@ setup(
     author='Shachaf Ben Jakov',
     description='Main project in Advanced-System-Design course',
     packages=find_packages(),
+    install_requires=['click'],
     tests_require=['pytest'],
 )
