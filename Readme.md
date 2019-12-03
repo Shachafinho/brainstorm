@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Shachafinho/brainstorm.svg?branch=master)](https://travis-ci.org/Shachafinho/brainstorm)
+
 # Brainstorm
 
 The main project for "Advanced System Design" course.\
