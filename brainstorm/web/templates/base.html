@@ -1,0 +1,13 @@
+<html>
+    <head>
+        {% if user_id %}
+        <title>Brain Computer Interface: User {{ user_id }}</title>
+        {% else %}
+        <title>Brain Computer Interface</title>
+        {% endif %}
+    </head>
+    <body>
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>
