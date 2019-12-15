@@ -7,6 +7,6 @@ setup(
     author='Shachaf Ben Jakov',
     description='Main project in Advanced-System-Design course',
     packages=find_packages(),
-    install_requires=['click'],
+    install_requires=['click', 'flask'],
     tests_require=['pytest'],
 )
