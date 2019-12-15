@@ -8,5 +8,5 @@ setup(
     description='Main project in Advanced-System-Design course',
     packages=find_packages(),
     install_requires=['click', 'flask'],
-    tests_require=['pytest'],
+    tests_require=['pytest', 'pytest-cov'],
 )
