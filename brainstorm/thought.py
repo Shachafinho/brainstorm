@@ -27,6 +27,11 @@ class Thought:
                 self.thought == other.thought and
                 self.timestamp == other.timestamp)
 
+    def __lt__(self, other):
+        if not isinstance(other, Thought):
+            return NotImplemented
+        return self.timestamp < other.timestamp
+
     def serialize_header(self):
         # Thought header format is as follows:
         # * 8 bytes (uint64) of user ID
