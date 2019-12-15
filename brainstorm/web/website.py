@@ -6,7 +6,7 @@ import flask
 from brainstorm import Thought
 
 
-def run_webserver(address, data_dir):
+def create_webserver(data_dir):
     website = flask.Flask(__name__)
 
     @website.route('/')
@@ -42,4 +42,9 @@ def run_webserver(address, data_dir):
         return flask.render_template(
             'user.html', user_id=user_id, thoughts=thoughts)
 
+    return website
+
+
+def run_webserver(address, data_dir):
+    website = create_webserver(data_dir)
     website.run(host=address[0], port=address[1])

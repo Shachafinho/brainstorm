@@ -1,11 +1,9 @@
-import multiprocessing
 import pathlib
 
 import flask
 import pytest
-import requests
 
-import brainstorm
+import brainstorm.web
 
 
 _ADDRESS = '127.0.0.1', 8000
@@ -14,33 +12,27 @@ _ROOT = pathlib.Path(__file__).absolute().parent.parent / 'brainstorm'
 _DATA_DIR = _ROOT.parent / 'data'
 
 
-def run_webserver():
-    brainstorm.run_webserver(_ADDRESS, _DATA_DIR)
+@pytest.fixture()
+def client():
+    webserver = brainstorm.web.create_webserver(_DATA_DIR)
+    with webserver.test_client() as client:
+        yield client
 
 
-@pytest.fixture(scope='module')
-def webserver():
-    process = multiprocessing.Process(target=run_webserver)
-    process.start()
-    try:
-        yield process
-    finally:
-        process.terminate()
-
-
-def test_index(webserver):
-    response = requests.get(_URL)
+def test_index(client):
+    response = client.get('/')
     for user_dir in _DATA_DIR.iterdir():
         if user_dir.name.startswith('.'):
             continue
-        assert flask.escape(f'user {user_dir.name}') in response.text
+        assert f'user {user_dir.name}' in response.data.decode()
 
 
-def test_user(webserver):
+def test_user(client):
     for user_dir in _DATA_DIR.iterdir():
         if user_dir.name.startswith('.'):
             continue
-        response = requests.get(f'{_URL}/users/{user_dir.name}')
-        assert flask.escape(f'User {user_dir.name}') in response.text
+        response = client.get(f'/users/{user_dir.name}')
+        response_text = response.data.decode()
+        assert f'User {user_dir.name}' in response_text
         for thought_file in user_dir.iterdir():
-            assert flask.escape(thought_file.read_text()) in response.text
+            assert flask.escape(thought_file.read_text()) in response_text
