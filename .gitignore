@@ -1,3 +1,4 @@
 .env/
 .pytest-cache/
 **/__pycache__
+docs/build/
