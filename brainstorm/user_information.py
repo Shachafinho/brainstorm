@@ -1,9 +1,9 @@
 class UserInformation:
-	def __init__(self, user_id, name, birth_date, gender):
-		self.user_id = user_id
-		self.name = name
-		self.birth_date = birth_date
-		self.gender = gender
+    def __init__(self, user_id, name, birth_date, gender):
+        self.user_id = user_id
+        self.name = name
+        self.birth_date = birth_date
+        self.gender = gender
 
     def __repr__(self):
         return (f'{self.__class__.__name__}('

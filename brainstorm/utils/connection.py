@@ -1,7 +1,11 @@
+import construct
 import socket
 
 
 class Connection:
+    Message = construct.PrefixedArray(
+        construct.Int32ul, construct.Byte).compile()
+
     def __init__(self, socket):
         self.socket = socket
 
@@ -26,6 +30,15 @@ class Connection:
                 raise ConnectionAbortedError()
             total_received_bytes += received_bytes
         return total_received_bytes
+
+    def send_message(self, data):
+        message_bytes = self.Message.build(data)
+        self.send(message_bytes)
+
+    def receive_message(self):
+        size_field = construct.Int32ul
+        msg_size = size_field.parse(self.receive(size_field.sizeof()))
+        return self.receive(msg_size)
 
     def close(self):
         self.socket.close()

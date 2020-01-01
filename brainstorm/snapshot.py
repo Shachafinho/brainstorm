@@ -1,11 +1,77 @@
+class Translation:
+    def __init__(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
+
+    def __repr__(self):
+        return (f'{self.__class__.__name__}('
+                f'x={self.x}, y={self.y}, z={self.z})')
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return (self.x == other.x and
+                self.y == other.y and
+                self.z == other.z)
+
+
+class Rotation:
+    def __init__(self, x, y, z, w):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.w = w
+
+    def __repr__(self):
+        return (f'{self.__class__.__name__}('
+                f'x={self.x}, y={self.y}, z={self.z}, w={self.w})')
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return (self.x == other.x and
+                self.y == other.y and
+                self.z == other.z and
+                self.w == other.w)
+
+
 class ColorImage:
-    def __init__(self, height, width, values):
-        pass
+    def __init__(self, width, height, values):
+        self.width = width
+        self.height = height
+        self.values = values
+
+    def __repr__(self):
+        return (f'{self.__class__.__name__}('
+                f'width={self.width}, height={self.height}, '
+                f'values=[...])')
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return (self.width == other.width and
+                self.height == other.height and
+                self.values == other.values)
 
 
 class DepthImage:
-    def __init__(self, height, width, values):
-        pass
+    def __init__(self, width, height, values):
+        self.width = width
+        self.height = height
+        self.values = values
+
+    def __repr__(self):
+        return (f'{self.__class__.__name__}('
+                f'width={self.width}, height={self.height}, '
+                f'values=[...])')
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return (self.width == other.width and
+                self.height == other.height and
+                self.values == other.values)
 
 
 class Feelings:
@@ -30,11 +96,11 @@ class Feelings:
 
 
 class Snapshot:
-	def __init__(self, timestamp, translation, rotation, color_image,
-				 depth_image, feelings):
+    def __init__(self, timestamp, translation, rotation, color_image,
+                 depth_image, feelings):
         '''
         :param timestamp:
-        :type timestamp: datetime.datetime
+        :type timestamp: arrow.Arrow
         :param translation: The user's position in 3D space.
         :type translation: tuple(double, double, double)
         :param rotation: The pose of the user's head.
@@ -47,16 +113,16 @@ class Snapshot:
         :type feelings: Feelings
         '''
         self.timestamp = timestamp
-		self.translation = translation
-		self.rotation = rotation
-		self.color_image = color_image
-		self.depth_image = depth_image
-		self.feelings = feelings
+        self.translation = translation
+        self.rotation = rotation
+        self.color_image = color_image
+        self.depth_image = depth_image
+        self.feelings = feelings
 
-	def __repr__(self):
-		return (f'{self.__class__.__name__}('
-			 	f'timestamp={self.timestamp}, rotation={self.rotation}, '
-				f'color_image={self.color_image}, '
+    def __repr__(self):
+        return (f'{self.__class__.__name__}('
+                f'timestamp={self.timestamp}, rotation={self.rotation}, '
+                f'color_image={self.color_image}, '
                 f'depth_image={self.depth_image}, feelings={self.feelings})')
 
     def __eq__(self, other):

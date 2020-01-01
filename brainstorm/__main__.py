@@ -3,6 +3,7 @@ import click
 from . import run_server as _run_server
 from . import run_webserver as _run_webserver
 from . import upload_thought as _upload_thought
+from .reader import SampleFileReader
 
 
 @click.group()
@@ -42,6 +43,16 @@ def upload_thought(address, user_id, thought):
               help='Data directory of uploaded thoughts')
 def run_webserver(address, data_dir):
     _run_webserver(address, data_dir)
+
+
+@main.command()
+@click.option('-f', '--snapshot-file', type=str, required=True,
+              help='Path to a snapshot file')
+def read(snapshot_file):
+    with SampleFileReader(snapshot_file) as reader:
+        print(reader.user_information)
+        for snapshot in reader.snapshots:
+            print(snapshot)
 
 
 if __name__ == '__main__':
