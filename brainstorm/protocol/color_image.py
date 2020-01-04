@@ -16,9 +16,9 @@ class ColorValueAdapter(construct.Adapter):
 
 
 ColorValueStruct = ColorValueAdapter(construct.Struct(
-    'b' / construct.Byte,
-    'g' / construct.Byte,
     'r' / construct.Byte,
+    'g' / construct.Byte,
+    'b' / construct.Byte,
 ).compile())
 
 
@@ -33,7 +33,7 @@ class ColorImage:
     def __repr__(self):
         return (f'{self.__class__.__name__}('
                 f'width={self.width}, height={self.height}, '
-                f'data=b\'...\')')
+                f'data=b\'...\'])')
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
