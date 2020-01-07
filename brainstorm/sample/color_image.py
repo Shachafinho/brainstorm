@@ -45,8 +45,7 @@ class ColorImage:
 
 class ColorImageAdapter(construct.Adapter):
     def _decode(self, obj, context, path):
-        data = bytes((obj.r, obj.g, obj.b))
-        return ColorImage(obj.width, obj.height, b''.join(data))
+        return ColorImage(obj.width, obj.height, b''.join(obj.data))
 
     def _encode(self, obj, context, path):
         pixels = grouper(3, obj.data)

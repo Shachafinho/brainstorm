@@ -3,7 +3,7 @@ import click
 from . import run_server as _run_server
 from . import run_webserver as _run_webserver
 from . import upload_thought as _upload_thought
-from .reader import SampleFileReader
+from .sample.reader import SampleFileReader
 
 
 @click.group()
