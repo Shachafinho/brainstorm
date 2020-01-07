@@ -28,6 +28,8 @@ class RotationAdapter(construct.Adapter):
         return Rotation(obj.x, obj.y, obj.z, obj.w)
 
     def _encode(self, obj, context, path):
+        if not obj:
+            return dict(x=0, y=0, z=0, w=0)
         return dict(x=obj.x, y=obj.y, z=obj.z, w=obj.w)
 
 

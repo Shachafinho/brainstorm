@@ -27,6 +27,8 @@ class DepthImageAdapter(construct.Adapter):
         return DepthImage(obj.width, obj.height, obj.data)
 
     def _encode(self, obj, context, path):
+        if not obj:
+            return dict(width=0, height=0, data=[])
         return dict(width=obj.width, height=obj.height, data=obj.data)
 
 

@@ -2,6 +2,21 @@ import construct
 
 
 class Hello:
+    class HelloAdapter(construct.Adapter):
+        def _decode(self, obj, context, path):
+            return Hello(obj.id, obj.name, obj.birth_date, obj.gender)
+
+        def _encode(self, obj, context, path):
+            return dict(id=obj.user_id, name=obj.name,
+                        birth_date=obj.birth_date, gender=obj.gender)
+
+    HelloStruct = HelloAdapter(construct.Struct(
+        'id' / construct.Int64ul,
+        'name' / construct.PascalString(construct.Int32ul, 'utf8'),
+        'birth_date' / construct.Timestamp(construct.Int32ul, 1, 1970),
+        'gender' / construct.PaddedString(1, 'utf8'),
+    ).compile())
+
     __slots__ = 'user_id', 'name', 'birth_date', 'gender'
 
     def __init__(self, user_id, name, birth_date, gender):
@@ -23,19 +38,9 @@ class Hello:
                 self.birth_date == other.birth_date and
                 self.gender == other.gender)
 
+    def serialize(self):
+        return self.HelloStruct.build(self)
 
-class HelloAdapter(construct.Adapter):
-    def _decode(self, obj, context, path):
-        return Hello(obj.id, obj.name, obj.birth_date, obj.gender)
-
-    def _encode(self, obj, context, path):
-        return dict(id=obj.user_id, name=obj.name,
-                    birth_date=obj.birth_date, gender=obj.gender)
-
-
-HelloStruct = HelloAdapter(construct.Struct(
-    'id' / construct.Int64ul,
-    'name' / construct.PascalString(construct.Int32ul, 'utf8'),
-    'birth_date' / construct.Timestamp(construct.Int32ul, 1, 1970),
-    'gender' / construct.PaddedString(1, 'utf8'),
-).compile())
+    @classmethod
+    def deserialize(cls, data):
+        return cls.HelloStruct.parse(data)

@@ -27,6 +27,8 @@ class FeelingsAdapter(construct.Adapter):
         return Feelings(obj.hunger, obj.thirst, obj.exhaustion, obj.happiness)
 
     def _encode(self, obj, context, path):
+        if not obj:
+            return dict(hunger=0, thirst=0, exhaustion=0, happiness=0)
         return dict(hunger=obj.hunger, thirst=obj.thirst,
                     exhaustion=obj.exhaustion, happiness=obj.happiness)
 

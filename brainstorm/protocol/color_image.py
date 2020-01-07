@@ -12,6 +12,8 @@ class ColorValueAdapter(construct.Adapter):
         return bytes([obj.r, obj.g, obj.b])
 
     def _encode(self, obj, context, path):
+        if not obj:
+            return dict(r=0, g=0, b=0)
         return dict(r=obj[0], g=obj[1], b=obj[2])
 
 
@@ -45,12 +47,14 @@ class ColorImage:
 
 class ColorImageAdapter(construct.Adapter):
     def _decode(self, obj, context, path):
-        data = bytes((obj.r, obj.g, obj.b))
-        return ColorImage(obj.width, obj.height, b''.join(data))
+        return ColorImage(obj.width, obj.height, b''.join(obj.data))
 
     def _encode(self, obj, context, path):
+        if not obj:
+            return dict(width=0, height=0, data=[])
+
         pixels = grouper(3, obj.data)
-        data = (dict(b=pixel[2], g=pixel[1], r=pixel[0]) for pixel in pixels)
+        data = [dict(b=pixel[2], g=pixel[1], r=pixel[0]) for pixel in pixels]
         return dict(width=obj.width, height=obj.height, data=data)
 
 

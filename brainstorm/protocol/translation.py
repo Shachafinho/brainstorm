@@ -26,6 +26,8 @@ class TranslationAdapter(construct.Adapter):
         return Translation(obj.x, obj.y, obj.z)
 
     def _encode(self, obj, context, path):
+        if not obj:
+            return dict(x=0, y=0, z=0)
         return dict(x=obj.x, y=obj.y, z=obj.z)
 
 
