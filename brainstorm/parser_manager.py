@@ -21,7 +21,8 @@ class ParserManager:
             parser_manager.load_parsers(parsers_dir)
         return parser_manager
 
-    def get_parser_tags(self):
+    @property
+    def parsers_tags(self):
         return self.parsers.keys()
 
     def parse(self, context, snapshot):

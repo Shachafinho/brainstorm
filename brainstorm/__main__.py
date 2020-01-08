@@ -1,9 +1,9 @@
 import click
 
-from . import run_server as _run_server
-from . import run_webserver as _run_webserver
-from . import upload_thought as _upload_thought
-from .sample.reader import SampleFileReader
+from . import run_server
+from . import run_webserver
+from . import share_mind
+from . import SampleFileReader
 
 
 @click.group()
@@ -11,38 +11,51 @@ def main():
     pass
 
 
-@main.command()
+@main.group()
+def server():
+    pass
+
+
+@server.command()
 @click.option('-a', '--address', type=(str, int), default=('0.0.0.0', 5000),
               show_default=True,
               help='Server address of the form: <ip> <port>')
 @click.option('-d', '--data-dir', type=str, default='data/',
               show_default=True,
-              help='Data directory of uploaded thoughts')
-def run_server(address, data_dir):
-    _run_server(address, data_dir)
+              help='Data directory of uploaded snapshots')
+def run(address, data_dir):
+    run_server(address, data_dir)
 
 
-@main.command()
+@main.group()
+def client():
+    pass
+
+
+@client.command()
 @click.option('-a', '--address', type=(str, int), default=('127.0.0.1', 5000),
               show_default=True,
               help='Server address of the form: <ip> <port>')
-@click.option('-u', '--user-id', type=int, required=True,
-              help='ID of the thought creator')
-@click.option('-t', '--thought', type=str, required=True,
-              help='The thought to be uploaded')
-def upload_thought(address, user_id, thought):
-    _upload_thought(address, user_id, thought)
+@click.option('-f', '--mind-file', type=click.Path(exists=True), required=True,
+              help='Path to a .mind file to be parsed and sent to the server')
+def run(address, mind_file):
+    share_mind(address, mind_file)
 
 
-@main.command()
+@main.group()
+def web():
+    pass
+
+
+@web.command()
 @click.option('-a', '--address', type=(str, int), default=('0.0.0.0', 8000),
               show_default=True,
               help='Server address of the form: <ip> <port>')
 @click.option('-d', '--data-dir', type=str, default='data/',
               show_default=True,
-              help='Data directory of uploaded thoughts')
-def run_webserver(address, data_dir):
-    _run_webserver(address, data_dir)
+              help='Data directory of uploaded snapshots')
+def run(address, data_dir):
+    run_webserver(address, data_dir)
 
 
 @main.command()

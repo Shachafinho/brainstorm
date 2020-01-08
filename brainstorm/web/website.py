@@ -3,8 +3,6 @@ import pathlib
 
 import flask
 
-from brainstorm import Thought
-
 
 def create_webserver(data_dir):
     website = flask.Flask(__name__)

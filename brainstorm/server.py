@@ -1,68 +1,59 @@
 import pathlib
 import threading
 
-from brainstorm.thought import Thought
+from brainstorm.context import Context
+from brainstorm.parser_manager import ParserManager
+from brainstorm.protocol import Hello as HelloMessage
+from brainstorm.protocol import Config as ConfigMessage
+from brainstorm.protocol import Snapshot as SnapshotMessage
 from brainstorm.utils import Listener
 
 
+PARSERS_DIR = pathlib.Path(__file__).parent.absolute() / 'parsers'
+
+
 class Handler(threading.Thread):
-    def __init__(self, connection, data_dir, lock):
+    def __init__(self, connection, data_dir, parser_manager):
         super().__init__()
         self.conn = connection
         self.data_dir = data_dir
-        self.lock = lock
+        self.parser_manager = parser_manager
+
+    def _get_hello(self):
+        return HelloMessage.deserialize(self.conn.receive_message())
+
+    def _send_config(self):
+        config = ConfigMessage(self.parser_manager.parsers_tags)
+        self.conn.send_message(config.serialize())
+
+    def _get_snapshot(self):
+        return SnapshotMessage.deserialize(self.conn.receive_message())
 
     def run(self):
-        # Obtain the thought header (as it is of fixed size),
-        # and extract its components.
-        header = self.conn.receive(Thought.get_header_size_in_bytes())
-        user_id, timestamp, thought_size = \
-            Thought.deserialize_header(header)
+        print(f'Waiting for hello message...')
+        hello = self._get_hello()
+        print(f'Got hello message: {hello}')
 
-        # Obtain the thought data (using header) and deserialize the thought.
-        thought_data = self.conn.receive(thought_size)
-        thought = Thought.deserialize_data(thought_data)
+        print(f'Sending config message...')
+        self._send_config()
+        print('Done sending config message')
 
-        # Construct the complete thought.
-        thought = Thought(user_id, timestamp, thought)
+        print(f'Waiting for snapshot message...')
+        snapshot = self._get_snapshot()
+        print(f'Got snapshot message: {snapshot}')
 
-        # Write the thought to the disk.
-        self.write_to_file(thought)
-
-        # Print the thought
-        print(thought)
-
-    def get_file_path(self, user_id, timestamp):
-        # Get the datetime string representation.
-        datetime_str = timestamp.strftime('%Y-%m-%d_%H-%M-%S')
-
-        # Return the full path.
-        return pathlib.Path(self.data_dir, str(user_id), datetime_str + '.txt')
-
-    def write_to_file(self, thought):
-        file_path = self.get_file_path(thought.user_id, thought.timestamp)
-        text_to_write = thought.thought
-
-        # Create directories along the path (as needed).
-        file_path.parent.mkdir(mode=0o775, parents=True, exist_ok=True)
-
-        with self.lock:
-            # Separate thought messages with a line-break.
-            if file_path.exists() and file_path.stat().st_size > 0:
-                text_to_write = '\n' + text_to_write
-
-            # Only access the file once the lock has been acquired.
-            with open(file_path, 'a') as f:
-                f.write(text_to_write)
+        print('Parsing snapshot...')
+        context = Context(self.data_dir, hello.user_id, snapshot.timestamp)
+        self.parser_manager.parse(context, snapshot)
 
 
 def run_server(address, data_dir):
     ip, port = address
     listener = Listener(port, ip) if ip else Listener(port)
+    parser_manager = ParserManager.from_parser_dirs(PARSERS_DIR)
 
-    lock = threading.RLock()
     with listener:
         while True:
             connection = listener.accept()
-            handler = Handler(connection, data_dir, lock)
+            handler = Handler(connection, data_dir, parser_manager)
             handler.start()
