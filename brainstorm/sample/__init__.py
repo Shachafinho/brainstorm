@@ -1,5 +1,4 @@
-from .reader import SampleFileReader
-from .reader import SampleStreamReader
+from .reader import Reader
 
 
-__all__ = [SampleFileReader, SampleStreamReader]
+__all__ = [Reader]

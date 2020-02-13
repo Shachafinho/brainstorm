@@ -1,44 +1,36 @@
-import construct
-import contextlib
+import pathlib
 
-from .snapshot import SnapshotStruct
-from .user_information import UserInformationStruct
-
-
-class SampleStreamReader:
-    def __init__(self, stream):
-        self.stream = stream
-        self.user_information = self._read_user_information()
-
-    def _read_user_information(self):
-        return UserInformationStruct.parse_stream(self.stream)
-
-    def _read_snapshot(self):
-        return SnapshotStruct.parse_stream(self.stream)
-
-    @property
-    def snapshots(self):
-        with contextlib.suppress(construct.StreamError):
-            while True:
-                yield self._read_snapshot()
+from .binary import BinaryFileReader
+from .protobuf import ProtobufReader
 
 
-class SampleFileReader:
+class Reader:
     def __init__(self, path):
-        self.path = path
+        self.reader_driver = find_reader_driver(path)
 
     def __enter__(self):
-        self.stream = open(self.path, 'rb')
-        return SampleStreamReader(self.stream)
+        return self.reader_driver.__enter__()
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        self.stream.close()
+        return self.reader_driver.__exit__(exc_type, exc_value, exc_traceback)
+
+
+def find_reader_driver(path):
+    path = pathlib.Path(path)
+    for ext, cls in reader_drivers.items():
+        if ext == ''.join(path.suffixes):
+            return cls(path)
+
+
+reader_drivers = {
+    '.mind': BinaryFileReader,
+    '.mind.gz': ProtobufReader,
+}
 
 
 if __name__ == '__main__':
     path = '/home/user/Downloads/sample.mind'
-    with open(path, 'rb') as f:
-        reader = SampleStreamReader(f)
+    with Reader(path) as reader:
         print(reader.user_information)
         for snapshot in reader.snapshots:
             print(snapshot)
