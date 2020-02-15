@@ -1,31 +1,16 @@
-import pathlib
-
-from .binary import BinaryFileReader
-from .protobuf import ProtobufReader
+from .reader_manager import reader_manager
 
 
 class Reader:
     def __init__(self, path):
-        self.reader_driver = find_reader_driver(path)
+        reader_driver_class = reader_manager.find_reader(path)
+        self.reader_driver = reader_driver_class(path)
 
     def __enter__(self):
         return self.reader_driver.__enter__()
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         return self.reader_driver.__exit__(exc_type, exc_value, exc_traceback)
-
-
-def find_reader_driver(path):
-    path = pathlib.Path(path)
-    for ext, cls in reader_drivers.items():
-        if ext == ''.join(path.suffixes):
-            return cls(path)
-
-
-reader_drivers = {
-    '.mind': BinaryFileReader,
-    '.mind.gz': ProtobufReader,
-}
 
 
 if __name__ == '__main__':

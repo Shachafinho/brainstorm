@@ -23,7 +23,7 @@ class BinaryStreamReader:
                 yield self._read_snapshot()
 
 
-class BinaryFileReader:
+class Reader:
     def __init__(self, path):
         self.path = path
 
