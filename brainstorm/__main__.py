@@ -3,7 +3,7 @@ import click
 from . import run_server
 from . import run_webserver
 from . import share_mind
-from . import SampleFileReader
+from . import Reader
 
 
 @click.group()
@@ -62,7 +62,7 @@ def run(address, data_dir):
 @click.option('-f', '--snapshot-file', type=str, required=True,
               help='Path to a snapshot file')
 def read(snapshot_file):
-    with SampleFileReader(snapshot_file) as reader:
+    with Reader(snapshot_file) as reader:
         print(reader.user_information)
         for snapshot in reader.snapshots:
             print(snapshot)

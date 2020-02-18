@@ -21,22 +21,22 @@ class ReaderManager:
     def find_reader(self, file_path):
         file_path = pathlib.Path(file_path)
         extension = ''.join(file_path.suffixes)
-        if extension in self.readers:
-            return self.readers[extension]
+        reader_tag = extension.replace('.', '_')
+        if reader_tag in self.readers:
+            return self.readers[reader_tag]
 
         # Load the reader corresponding with the required extension.
         try:
             current_dir = pathlib.Path(__file__).parent.absolute()
             sys.path.insert(0, str(current_dir))
             reader_module = importlib.import_module(
-                f'{extension[1:]}.reader', package=extension)
+                f'{reader_tag}.reader', package=reader_tag)
 
             reader_class = _find_reader_in_module(reader_module)
-            self.readers[extension] = reader_class
+            self.readers[reader_tag] = reader_class
             return reader_class
-        except (ImportError, LookupError) as e:
-            print(e)
-            raise ValueError(f'Unsupported format: {extension!r}')
+        except (ImportError, LookupError, ModuleNotFoundError):
+            raise ValueError(f'Unsupported file format: {extension!r}')
 
 
 reader_manager = ReaderManager()
@@ -44,6 +44,15 @@ reader_manager = ReaderManager()
 
 if __name__ == '__main__':
     samples_dir = pathlib.Path('/home/user/Downloads/')
+
+    print('Attempting to find .mind reader')
     mind_reader = reader_manager.find_reader(samples_dir / 'sample.mind')
+    print('Found .mind reader')
+
+    print('Attempting to find .mind reader')
     mind_gz_reader = reader_manager.find_reader(samples_dir / 'sample.mind.gz')
+    print('Found .mind.gz reader')
+
+    print('Attempting to find .unknown reader')
     unknown_reader = reader_manager.find_reader(samples_dir / 'sample.unknown')
+    print('Found .unknown reader')

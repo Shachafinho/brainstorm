@@ -1,7 +1,7 @@
 from brainstorm.protocol import Hello
 from brainstorm.protocol import Config
 from brainstorm.protocol import Snapshot
-from brainstorm.sample import SampleFileReader
+from brainstorm.sample import Reader
 from brainstorm.utils import Connection
 
 
@@ -16,7 +16,7 @@ def build_protocol_snapshot(reader_snapshot, supported_fields):
 
 def share_mind(address, mind_file):
     # Read the mind file to obtain user information and snapshots
-    with SampleFileReader(mind_file) as reader:
+    with Reader(mind_file) as reader:
         user = reader.user_information
         hello = Hello(user.user_id, user.name, user.birth_date, user.gender)
 
