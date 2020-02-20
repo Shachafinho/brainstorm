@@ -1,12 +1,9 @@
-import construct
 import contextlib
 import gzip
 
 from . import sample_pb2
-
-
-Message = construct.Prefixed(
-    construct.Int32ul, construct.GreedyBytes).compile()
+from .adapter import snapshot_from_protobuf, user_information_from_protobuf
+from .message import Message
 
 
 class ProtobufStreamReader:
@@ -21,7 +18,7 @@ class ProtobufStreamReader:
     def _read_user_information(self):
         user_information = sample_pb2.User()
         user_information.ParseFromString(self._read_message())
-        return user_information
+        return user_information_from_protobuf(user_information)
 
     def _update_user_information(self):
         if not self._user_information:
@@ -36,7 +33,7 @@ class ProtobufStreamReader:
     def _read_snapshot(self):
         snapshot = sample_pb2.Snapshot()
         snapshot.ParseFromString(self._read_message())
-        return snapshot
+        return snapshot_from_protobuf(snapshot)
 
     @property
     def snapshots(self):
