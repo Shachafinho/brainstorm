@@ -1,27 +1,43 @@
-import arrow
+from arrow import Arrow
 
-import sample_pb2
+from . import sample_pb2
 
-from ...common import ColorImage
-from ...common import DepthImage
-from ...common import Feelings
-from ...common import Rotation
-from ...common import Snapshot
-from ...common import Translation
-from ...common import UserInformation
+from brainstorm.common import ColorImage
+from brainstorm.common import DepthImage
+from brainstorm.common import Feelings
+from brainstorm.common import Rotation
+from brainstorm.common import Snapshot
+from brainstorm.common import Translation
+from brainstorm.common import UserInformation
+
+
+_GENDER_TO_STR = {
+    sample_pb2.User.Gender.MALE: 'm',
+    sample_pb2.User.Gender.FEMALE: 'f',
+    sample_pb2.User.Gender.OTHER: 'o',
+}
+_STR_TO_GENDER = {v: k for k, v in _GENDER_TO_STR.items()}
+
+
+def _gender_to_str(gender):
+    return _GENDER_TO_STR[gender]
+
+
+def _str_to_gender(gender_str):
+    return _STR_TO_GENDER[gender_str]
 
 
 def user_information_from_protobuf(user_information_message):
     return UserInformation(
         user_id=user_information_message.user_id,
         name=user_information_message.username,
-        birth_date=user_information_message.birthday,
-        gender=user_information_message.gender)
+        birth_date=Arrow.utcfromtimestamp(user_information_message.birthday),
+        gender=_gender_to_str(user_information_message.gender))
 
 
 def snapshot_from_protobuf(snapshot_message):
     return Snapshot(
-        timestamp=arrow.Arrow.fromtimestamp(snapshot_message.datetime),
+        timestamp=Arrow.utcfromtimestamp(snapshot_message.datetime / 1000),
         translation=Translation(
             x=snapshot_message.pose.translation.x,
             y=snapshot_message.pose.translation.y,
@@ -56,20 +72,20 @@ def user_information_to_protobuf(user_information_obj):
     return sample_pb2.User(
         user_id=user_information_obj.user_id,
         username=user_information_obj.name,
-        birthday=user_information_obj.birth_date,
-        gender=user_information_obj.gender)
+        birthday=int(user_information_obj.birth_date.float_timestamp),
+        gender=_str_to_gender(user_information_obj.gender))
 
 
 def snapshot_to_protobuf(snapshot_obj):
     return sample_pb2.Snapshot(
-        datetime=snapshot_obj.timestamp,
-        pose=sample_pb2.Snapshot.Pose(
-            translation=sample_pb2.Snapshot.Translation(
+        datetime=int(snapshot_obj.timestamp.float_timestamp * 1000),
+        pose=sample_pb2.Pose(
+            translation=sample_pb2.Pose.Translation(
                 x=snapshot_obj.translation.x,
                 y=snapshot_obj.translation.y,
                 z=snapshot_obj.translation.z
             ),
-            rotation=sample_pb2.Snapshot.Rotation(
+            rotation=sample_pb2.Pose.Rotation(
                 x=snapshot_obj.rotation.x,
                 y=snapshot_obj.rotation.y,
                 z=snapshot_obj.rotation.z,
@@ -88,35 +104,8 @@ def snapshot_to_protobuf(snapshot_obj):
         ),
         feelings=sample_pb2.Feelings(
             hunger=snapshot_obj.feelings.hunger,
-            thirst=snapshot_obj.feelings.thrist,
+            thirst=snapshot_obj.feelings.thirst,
             exhaustion=snapshot_obj.feelings.exhaustion,
             happiness=snapshot_obj.feelings.happiness
         )
     )
-
-
-# CONVERTERS_FROM_PROTOBUF = {
-#     sample_pb2.User: user_information_from_protobuf,
-#     sample_pb2.Snapshot: snapshot_from_protobuf,
-# }
-
-# CONVERTERS_TO_PROTOBUF = {
-#     UserInformation: user_information_to_protobuf,
-#     Snapshot: snapshot_to_protobuf,
-# }
-
-
-# def from_protobuf(message):
-#     converter = CONVERTERS_FROM_PROTOBUF.get(message.__class__)
-#     if converter:
-#         return converter(message)
-#     raise ValueError(f'{message} cannot be converted. '
-#                      f'{message.__class__} is not supported')
-
-
-# def to_protobuf(obj):
-#     converter = CONVERTERS_TO_PROTOBUF.get(obj.__class__)
-#     if converter:
-#         return converter(obj)
-#     raise ValueError(f'{obj} cannot be converted. '
-#                      f'{obj.__class__} is not supported')

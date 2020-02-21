@@ -62,10 +62,7 @@ class ParserManager:
     def load_parsers(self, parsers_dir):
         parsers_dir = pathlib.Path(parsers_dir)
         sys.path.insert(0, str(parsers_dir.parent))
-        for path in parsers_dir.iterdir():
-            if path.name.startswith('_') or path.suffix != '.py':
-                continue
-
+        for path in parsers_dir.glob('[!_]*.py'):
             module = importlib.import_module(
                 f'{parsers_dir.name}.{path.stem}', package=parsers_dir.name)
             self._load_parsers_from_module(module)

@@ -5,7 +5,7 @@ from .snapshot import SnapshotStruct
 from .user_information import UserInformationStruct
 
 
-class BinaryStreamReader:
+class Reader:
     def __init__(self, stream):
         self._stream = stream
         self._user_information = None
@@ -36,22 +36,10 @@ class BinaryStreamReader:
                 yield self._read_snapshot()
 
 
-class Reader:
-    def __init__(self, path):
-        self.path = path
-
-    def __enter__(self):
-        self.stream = open(self.path, 'rb')
-        return BinaryStreamReader(self.stream)
-
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        self.stream.close()
-
-
 if __name__ == '__main__':
     path = '/home/user/Downloads/sample.mind'
     with open(path, 'rb') as f:
-        reader = BinaryStreamReader(f)
+        reader = Reader(f)
         print(reader.user_information)
         for snapshot in reader.snapshots:
             print(snapshot)

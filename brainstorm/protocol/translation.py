@@ -32,7 +32,7 @@ class TranslationAdapter(construct.Adapter):
 
 
 TranslationStruct = TranslationAdapter(construct.Struct(
-    'x' / construct.Double,
-    'y' / construct.Double,
-    'z' / construct.Double,
+    'x' / construct.Float64l,
+    'y' / construct.Float64l,
+    'z' / construct.Float64l,
 ).compile())

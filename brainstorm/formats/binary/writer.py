@@ -1,17 +1,13 @@
-from .adapter import snapshot_to_protobuf, user_information_to_protobuf
-from .message import Message
+from .snapshot import SnapshotStruct
+from .user_information import UserInformationStruct
 
 
 class Writer:
     def __init__(self, stream):
         self._stream = stream
 
-    def _write_message(self, data):
-        self._stream.write(Message.build(data))
-
     def _write_user_information(self, user_information_obj):
-        user_information = user_information_to_protobuf(user_information_obj)
-        self._write_message(user_information.SerializeToString())
+        self._stream.write(UserInformationStruct.build(user_information_obj))
 
     @property
     def user_information(self):
@@ -22,8 +18,7 @@ class Writer:
         self._write_user_information(user_information)
 
     def _write_snapshot(self, snapshot_obj):
-        snapshot = snapshot_to_protobuf(snapshot_obj)
-        self._write_message(snapshot.SerializeToString())
+        self._stream.write(SnapshotStruct.build(snapshot_obj))
 
     @property
     def snapshot(self):
@@ -45,13 +40,12 @@ class Writer:
 
 if __name__ == '__main__':
     from .reader import Reader
-    import gzip
-    read_path = '/home/user/Downloads/sample.mind.gz'
-    write_path = '/home/user/Downloads/output.mind.gz'
-    with gzip.open(read_path, 'rb') as rf, open(write_path, 'wb') as wf:
+    read_path = '/home/user/Downloads/sample.mind'
+    write_path = '/home/user/Downloads/output.mind'
+    with open(read_path, 'rb') as rf, open(write_path, 'wb') as wf:
         reader = Reader(rf)
         writer = Writer(wf)
-        
+
         user_information = reader.user_information
         print(reader.user_information)
         writer.user_information = user_information

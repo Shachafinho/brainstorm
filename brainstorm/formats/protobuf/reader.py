@@ -1,12 +1,11 @@
 import contextlib
-import gzip
 
 from . import sample_pb2
 from .adapter import snapshot_from_protobuf, user_information_from_protobuf
 from .message import Message
 
 
-class ProtobufStreamReader:
+class Reader:
     def __init__(self, stream):
         self._stream = stream
         self._user_information = None
@@ -44,21 +43,10 @@ class ProtobufStreamReader:
                 yield self._read_snapshot()
 
 
-class Reader:
-    def __init__(self, path):
-        self.path = path
-
-    def __enter__(self):
-        self.stream = gzip.open(self.path, 'rb')
-        return ProtobufStreamReader(self.stream)
-
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        self.stream.close()
-
-
 if __name__ == '__main__':
     path = '/home/user/Downloads/sample.mind.gz'
-    with Reader(path) as reader:
+    with open(path) as rf:
+        reader = Reader(rf)
         print(reader.user_information)
         for snapshot in reader.snapshots:
             print(snapshot)

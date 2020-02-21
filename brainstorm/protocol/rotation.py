@@ -34,8 +34,8 @@ class RotationAdapter(construct.Adapter):
 
 
 RotationStruct = RotationAdapter(construct.Struct(
-    'x' / construct.Double,
-    'y' / construct.Double,
-    'z' / construct.Double,
-    'w' / construct.Double,
+    'x' / construct.Float64l,
+    'y' / construct.Float64l,
+    'z' / construct.Float64l,
+    'w' / construct.Float64l,
 ).compile())
