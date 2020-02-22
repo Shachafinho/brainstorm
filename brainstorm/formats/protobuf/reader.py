@@ -45,7 +45,8 @@ class Reader:
 
 if __name__ == '__main__':
     path = '/home/user/Downloads/sample.mind.gz'
-    with open(path) as rf:
+    import gzip
+    with gzip.open(path) as rf:
         reader = Reader(rf)
         print(reader.user_information)
         for snapshot in reader.snapshots:
