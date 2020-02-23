@@ -2,8 +2,8 @@ from .reader_manager import reader_manager
 
 
 class Reader:
-    def __init__(self, path):
-        reader_driver_class = reader_manager.find_reader(path)
+    def __init__(self, format, path):
+        reader_driver_class = reader_manager.find_driver(format)
         self.reader_driver = reader_driver_class(path)
 
     def __enter__(self):
