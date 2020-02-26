@@ -1,4 +1,3 @@
-import contextlib
 import importlib
 import inspect
 
@@ -11,18 +10,6 @@ class HandlerConfig:
     def __init__(self, module_name, class_name):
         self.module_name = module_name
         self.class_name = class_name
-
-
-class FormatterDriver:
-    __slots__ = 'reader', 'writer'
-
-    def __init__(self, reader, writer):
-        self.reader = reader
-        self.writer = writer
-
-    def __repr__(self):
-        args = ', '.join([f'{k}={getattr(self, k)!r}' for k in self.__slots__])
-        return f'{self.__class__.__name__}({args})'
 
 
 _CONFIG = {
@@ -40,7 +27,7 @@ def _find_handler_in_module(module, target):
         f'Failed to locate {handler_class_name!r} class in module {module!r}')
 
 
-def find_handler(format_tag, target):
+def _find_handler(format_tag, target):
     try:
         handler_module_name = _CONFIG[target].module_name
         handler_module = importlib.import_module(
@@ -51,25 +38,20 @@ def find_handler(format_tag, target):
         raise ValueError(f'Unsupported format for {target!r}: {format_tag!r}')
 
 
-def find_driver(format_tag):
-    reader = None
-    with contextlib.suppress(ValueError):
-        reader = find_handler(format_tag, 'read')
-    writer = None
-    with contextlib.suppress(ValueError):
-        writer = find_handler(format_tag, 'write')
-
-    if reader is None and writer is None:
-        raise ValueError(f'Unsupported format: {format_tag!r}')
-
-    return FormatterDriver(reader, writer)
+def _find_reader(format_tag):
+    return _find_handler(format_tag, 'read')
 
 
-formatter_manager = DriverManager(find_driver)
+def _find_writer(format_tag):
+    return _find_handler(format_tag, 'write')
+
+
+reader_manager = DriverManager(_find_reader)
+writer_manager = DriverManager(_find_writer)
 
 
 if __name__ == '__main__':
     for tag in ['binary', 'protobuf', 'unknown']:
         print(f'Attempting to find {tag!r} reader')
-        driver = formatter_manager.find_driver(tag)
-        print(f'Found {tag!r} driver: {driver!r}')
+        reader = reader_manager.find_driver(tag)
+        print(f'Found {tag!r} reader: {reader!r}')

@@ -1,5 +1,6 @@
 import pathlib
 import threading
+import traceback
 
 from brainstorm.context import Context
 from brainstorm.parser_manager import ParserManager
@@ -30,21 +31,24 @@ class Handler(threading.Thread):
         return SnapshotMessage.deserialize(self.conn.receive_message())
 
     def run(self):
-        print(f'Waiting for hello message...')
-        hello = self._get_hello()
-        print(f'Got hello message: {hello}')
+        try:
+            print(f'Waiting for hello message...')
+            hello = self._get_hello()
+            print(f'Got hello message: {hello}')
 
-        print(f'Sending config message...')
-        self._send_config()
-        print('Done sending config message')
+            print(f'Sending config message...')
+            self._send_config()
+            print('Done sending config message')
 
-        print(f'Waiting for snapshot message...')
-        snapshot = self._get_snapshot()
-        print(f'Got snapshot message: {snapshot}')
+            print(f'Waiting for snapshot message...')
+            snapshot = self._get_snapshot()
+            print(f'Got snapshot message: {snapshot}')
 
-        print('Parsing snapshot...')
-        context = Context(self.data_dir, hello.user_id, snapshot.timestamp)
-        self.parser_manager.parse(context, snapshot)
+            print('Parsing snapshot...')
+            context = Context(self.data_dir, hello.user_id, snapshot.timestamp)
+            self.parser_manager.parse(context, snapshot)
+        except ConnectionError:
+            print(f'Caught exception: {traceback.format_exc()}')
 
 
 def run_server(address, data_dir):
