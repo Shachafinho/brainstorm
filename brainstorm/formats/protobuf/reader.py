@@ -1,5 +1,7 @@
 import contextlib
 
+import construct
+
 from . import sample_pb2
 from .adapter import snapshot_from_protobuf, user_information_from_protobuf
 from .message import Message
@@ -38,7 +40,7 @@ class Reader:
     def snapshots(self):
         self._update_user_information()
         self._stream.seek(self._user_information_end_location)
-        with contextlib.suppress(StopIteration):
+        with contextlib.suppress(construct.StreamError):
             while True:
                 yield self._read_snapshot()
 
