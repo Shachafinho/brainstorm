@@ -1,23 +1,6 @@
 import construct
 
 
-class ColorValueAdapter(construct.Adapter):
-    def _decode(self, obj, context, path):
-        return (obj.r, obj.g, obj.b)
-
-    def _encode(self, obj, context, path):
-        if not obj:
-            return dict(zip('rgb', [0] * 3))
-        return dict(zip('rgb', obj))
-
-
-ColorValueStruct = ColorValueAdapter(construct.Struct(
-    'r' / construct.Byte,
-    'g' / construct.Byte,
-    'b' / construct.Byte,
-).compile())
-
-
 class ColorImage:
     __slots__ = 'width', 'height', 'data'
 
@@ -45,14 +28,12 @@ class ColorImageAdapter(construct.Adapter):
 
     def _encode(self, obj, context, path):
         if not obj:
-            return dict(width=0, height=0, data=[])
-
+            return dict(width=0, height=0, data=b'')
         return dict(width=obj.width, height=obj.height, data=obj.data)
 
 
 ColorImageStruct = ColorImageAdapter(construct.Struct(
     'height' / construct.Int32ul,
     'width' / construct.Int32ul,
-    'data' / construct.Array(construct.this.width * construct.this.height,
-                             ColorValueStruct),
+    'data' / construct.Bytes(construct.this.width * construct.this.height * 3),
 ).compile())
