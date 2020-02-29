@@ -1,7 +1,7 @@
 import pathlib
 
-from brainstorm.drivers import ExhaustiveConfig
-from brainstorm.drivers import ExhaustiveDriverManager
+from brainstorm.utils.drivers import ExhaustiveConfig
+from brainstorm.utils.drivers import ExhaustiveDriverManager
 
 
 parser_manager = ExhaustiveDriverManager(ExhaustiveConfig(

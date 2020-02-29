@@ -5,8 +5,8 @@ import pathlib
 import re
 
 from .driver_manager import DriverManager
-from .utils import path_to_package
-from .utils import ROOT_DIR
+from brainstorm.utils.paths import path_to_package
+from brainstorm.utils.paths import ROOT_DIR
 
 
 class ExhaustiveConfig:

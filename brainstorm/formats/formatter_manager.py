@@ -1,7 +1,7 @@
 import pathlib
 
-from brainstorm.drivers import FocusedConfig
-from brainstorm.drivers import FocusedDriverManager
+from brainstorm.utils.drivers import FocusedConfig
+from brainstorm.utils.drivers import FocusedDriverManager
 
 
 CURRENT_DIR = pathlib.Path(__file__).parent.absolute()
