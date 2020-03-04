@@ -36,17 +36,22 @@ class Handler:
     def __exit__(self, exc_type, exc_vaue, exc_traceback):
         self._connection.close()
 
-    def publish(self, message, key=None):
+    def publish(self, message, topic=None, key=None):
+        exchange = topic or self.DEFAULT_EXCHANGE
         key = key or self.DEFAULT_KEY
-        self._channel.basic_publish(
-            exchange=self.DEFAULT_EXCHANGE, routing_key=key, body=message)
 
-    def consume(self, callback, key=None):
+        self._channel.basic_publish(
+            exchange=exchange, routing_key=key, body=message,
+            properties=pika.BasicProperties(delivery_mode=2))
+
+    def subscribe(self, callback, topic=None, key=None):
+        exchange = topic or self.DEFAULT_EXCHANGE
         key = key or self.DEFAULT_KEY
+
         result = self._channel.queue_declare('', exclusive=True)
         queue_name = result.method.queue
         self._channel.queue_bind(
-            exchange=self.DEFAULT_EXCHANGE, queue=queue_name, routing_key=key)
+            exchange=exchange, queue=queue_name, routing_key=key)
         self._channel.basic_consume(
             queue=queue_name, on_message_callback=callback_wrapper(callback))
 
