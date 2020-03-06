@@ -11,22 +11,6 @@ def main():
 
 
 @main.group()
-def server():
-    pass
-
-
-@server.command()
-@click.option('-a', '--address', type=(str, int), default=('0.0.0.0', 8000),
-              show_default=True,
-              help='Server address of the form: <ip> <port>')
-@click.option('-d', '--data-dir', type=str, default='data/',
-              show_default=True,
-              help='Data directory of uploaded snapshots')
-def run(address, data_dir):
-    run_server(address, data_dir)
-
-
-@main.group()
 def web():
     pass
 

@@ -1,6 +1,7 @@
 import click
 
 from . import run_server as _run_server
+from brainstorm.message_queue import MessageQueue
 
 
 @click.group()
@@ -14,8 +15,9 @@ def main():
 @click.option('-p', '--port', type=int, default=8000, show_default=True,
               help='Server port to listen on')
 @click.argument('mq-url')
-def upload_sample(host, port, mq_url):
-    _run_server(host, port, mq_url)
+def run_server(host, port, mq_url):
+    with MessageQueue(mq_url) as mq:
+        _run_server(host, port, mq.publish)
 
 
 if __name__ == '__main__':

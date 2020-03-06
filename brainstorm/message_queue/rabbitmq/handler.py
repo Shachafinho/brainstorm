@@ -25,16 +25,17 @@ class Handler:
         url.scheme = 'amqp'
         self._connection_params = pika.URLParameters(str(url))
 
-    def __enter__(self):
         self._connection = pika.BlockingConnection(self._connection_params)
         self._channel = self._connection.channel()
         self._channel.exchange_declare(
             exchange=self.DEFAULT_EXCHANGE, exchange_type='topic')
 
+    def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_vaue, exc_traceback):
-        self._connection.close()
+        if self._connection:
+            self._connection.close()
 
     def publish(self, message, topic=None, key=None):
         exchange = topic or self.DEFAULT_EXCHANGE
