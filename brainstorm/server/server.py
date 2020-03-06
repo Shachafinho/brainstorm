@@ -42,7 +42,7 @@ class Handler(threading.Thread):
             print(f'Got snapshot message: {snapshot}')
 
             print('Publishing snapshot...')
-            self._publish(snapshot)
+            self._publish(str(snapshot))
 
             # context = Context(self.data_dir, hello.user_id, snapshot.timestamp)
             # self.parser_manager.parse(context, snapshot)
