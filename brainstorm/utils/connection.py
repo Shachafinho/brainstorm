@@ -23,13 +23,15 @@ class Connection:
         self.socket.sendall(data)
 
     def receive(self, size):
-        total_received_bytes = b''
-        while len(total_received_bytes) < size:
-            received_bytes = self.socket.recv(size - len(total_received_bytes))
-            if not received_bytes:
+        chunks = []
+        total_received_bytes = 0
+        while total_received_bytes < size:
+            chunk = self.socket.recv(size - total_received_bytes)
+            if not chunk:
                 raise ConnectionAbortedError()
-            total_received_bytes += received_bytes
-        return total_received_bytes
+            chunks.append(chunk)
+            total_received_bytes += len(chunk)
+        return b''.join(chunks)
 
     def send_message(self, data):
         message_bytes = self.Message.build(data)
