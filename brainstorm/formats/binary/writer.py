@@ -6,19 +6,13 @@ class Writer:
     def __init__(self, stream):
         self._stream = stream
 
-    def _write_user_information(self, user_information_obj):
-        self._stream.write(UserInformationStruct.build(user_information_obj))
-
     @property
     def user_information(self):
         pass
 
     @user_information.setter
     def user_information(self, user_information):
-        self._write_user_information(user_information)
-
-    def _write_snapshot(self, snapshot_obj):
-        self._stream.write(SnapshotStruct.build(snapshot_obj))
+        Writer.write_user_information(user_information, self._stream)
 
     @property
     def snapshot(self):
@@ -26,7 +20,7 @@ class Writer:
 
     @snapshot.setter
     def snapshot(self, snapshot):
-        self._write_snapshot(snapshot)
+        Writer.write_snapshot(snapshot, self._stream)
 
     @property
     def snapshots(self):
@@ -36,6 +30,18 @@ class Writer:
     def snapshots(self, snapshots):
         for snapshot in snapshots:
             self.snapshot = snapshot
+
+    @staticmethod
+    def write_user_information(user_information_obj, output_obj=None):
+        if not output_obj:
+            return UserInformationStruct.build(user_information_obj)
+        return UserInformationStruct.build_sream(user_information_obj, output_obj)
+
+    @staticmethod
+    def write_snapshot(snapshot_obj, output_obj=None):
+        if not output_obj:
+            return SnapshotStruct.build(snapshot_obj)
+        return SnapshotStruct.build_sream(snapshot_obj, output_obj)
 
 
 if __name__ == '__main__':

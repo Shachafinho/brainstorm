@@ -2,16 +2,15 @@ from .adapter import snapshot_to_protobuf, user_information_to_protobuf
 from .message import Message
 
 
+def _write_message(data, output_obj=None):
+    if not output_obj:
+        return Message.build(data)
+    return Message.build_stream(data, output_obj)
+
+
 class Writer:
     def __init__(self, stream):
         self._stream = stream
-
-    def _write_message(self, data):
-        self._stream.write(Message.build(data))
-
-    def _write_user_information(self, user_information_obj):
-        user_information = user_information_to_protobuf(user_information_obj)
-        self._write_message(user_information.SerializeToString())
 
     @property
     def user_information(self):
@@ -19,11 +18,7 @@ class Writer:
 
     @user_information.setter
     def user_information(self, user_information):
-        self._write_user_information(user_information)
-
-    def _write_snapshot(self, snapshot_obj):
-        snapshot = snapshot_to_protobuf(snapshot_obj)
-        self._write_message(snapshot.SerializeToString())
+        Writer.write_user_information(user_information, self._stream)
 
     @property
     def snapshot(self):
@@ -31,7 +26,7 @@ class Writer:
 
     @snapshot.setter
     def snapshot(self, snapshot):
-        self._write_snapshot(snapshot)
+        Writer.write_snapshot(snapshot, self._stream)
 
     @property
     def snapshots(self):
@@ -41,6 +36,16 @@ class Writer:
     def snapshots(self, snapshots):
         for snapshot in snapshots:
             self.snapshot = snapshot
+
+    @staticmethod
+    def write_user_information(user_information_obj, output_obj=None):
+        user_information = user_information_to_protobuf(user_information_obj)
+        return _write_message(user_information.SerializeToString(), output_obj)
+
+    @staticmethod
+    def write_snapshot(snapshot_obj, output_obj=None):
+        snapshot = snapshot_to_protobuf(snapshot_obj)
+        return _write_message(snapshot.SerializeToString(), output_obj)
 
 
 if __name__ == '__main__':

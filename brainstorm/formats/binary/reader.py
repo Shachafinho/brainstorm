@@ -11,12 +11,9 @@ class Reader:
         self._user_information = None
         self._user_information_end_location = None
 
-    def _read_user_information(self):
-        return UserInformationStruct.parse_stream(self._stream)
-
     def _update_user_information(self):
         if not self._user_information:
-            self._user_information = self._read_user_information()
+            self._user_information = Reader.read_user_information(self._stream)
             self._user_information_end_location = self._stream.tell()
 
     @property
@@ -24,16 +21,25 @@ class Reader:
         self._update_user_information()
         return self._user_information
 
-    def _read_snapshot(self):
-        return SnapshotStruct.parse_stream(self._stream)
-
     @property
     def snapshots(self):
         self._update_user_information()
         self._stream.seek(self._user_information_end_location)
         with contextlib.suppress(construct.StreamError):
             while True:
-                yield self._read_snapshot()
+                yield Reader.read_snapshot(self._stream)
+
+    @staticmethod
+    def read_user_information(input_obj):
+        if isinstance(input_obj, bytes):
+            return UserInformationStruct.parse(input_obj)
+        return UserInformationStruct.parse_stream(input_obj)
+
+    @staticmethod
+    def read_snapshot(input_obj):
+        if isinstance(input_obj, bytes):
+            return SnapshotStruct.parse(input_obj)
+        return SnapshotStruct.parse_stream(input_obj)
 
 
 if __name__ == '__main__':

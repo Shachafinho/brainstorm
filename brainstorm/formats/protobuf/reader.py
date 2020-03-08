@@ -1,10 +1,14 @@
 import contextlib
 
-import construct
-
 from . import sample_pb2
 from .adapter import snapshot_from_protobuf, user_information_from_protobuf
-from .message import Message
+from .message import Message, StreamError
+
+
+def _read_message(input_obj):
+    if isinstance(input_obj, bytes):
+        return Message.parse(input_obj)
+    return Message.parse_stream(input_obj)
 
 
 class Reader:
@@ -13,17 +17,9 @@ class Reader:
         self._user_information = None
         self._user_information_end_location = None
 
-    def _read_message(self):
-        return Message.parse_stream(self._stream)
-
-    def _read_user_information(self):
-        user_information = sample_pb2.User()
-        user_information.ParseFromString(self._read_message())
-        return user_information_from_protobuf(user_information)
-
     def _update_user_information(self):
         if not self._user_information:
-            self._user_information = self._read_user_information()
+            self._user_information = Reader.read_user_information(self._stream)
             self._user_information_end_location = self._stream.tell()
 
     @property
@@ -31,18 +27,25 @@ class Reader:
         self._update_user_information()
         return self._user_information
 
-    def _read_snapshot(self):
-        snapshot = sample_pb2.Snapshot()
-        snapshot.ParseFromString(self._read_message())
-        return snapshot_from_protobuf(snapshot)
-
     @property
     def snapshots(self):
         self._update_user_information()
         self._stream.seek(self._user_information_end_location)
-        with contextlib.suppress(construct.StreamError):
+        with contextlib.suppress(StreamError):
             while True:
-                yield self._read_snapshot()
+                yield Reader.read_snapshot(self._stream)
+
+    @staticmethod
+    def read_user_information(input_obj):
+        user_information = sample_pb2.User()
+        user_information.ParseFromString(_read_message(input_obj))
+        return user_information_from_protobuf(user_information)
+
+    @staticmethod
+    def read_snapshot(input_obj):
+        snapshot = sample_pb2.Snapshot()
+        snapshot.ParseFromString(_read_message(input_obj))
+        return snapshot_from_protobuf(snapshot)
 
 
 if __name__ == '__main__':
