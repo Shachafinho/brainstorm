@@ -5,7 +5,7 @@ from brainstorm.utils.drivers import ExhaustiveDriverManager
 
 
 parser_manager = ExhaustiveDriverManager(ExhaustiveConfig(
-    search_dir=(pathlib.Path(__file__).parent / 'parsers').absolute(),
+    search_dir=(pathlib.Path(__file__).parent).absolute(),
     class_regex=r'.*Parser',
     needed_class_method='parse',
     func_regex=r'parse(_.+)?'
