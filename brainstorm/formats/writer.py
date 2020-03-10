@@ -1,48 +1,33 @@
-import pathlib
-
-from brainstorm.utils.drivers import FocusedConfig
-from brainstorm.utils.drivers import FocusedDriverManager
-
-
-writer_manager = FocusedDriverManager(FocusedConfig(
-    search_dir=pathlib.Path(__file__).parent.absolute(),
-    module_name='writer',
-    class_name='Writer',
-))
+from .formatter import Formatter
 
 
 class Writer:
     def __init__(self, format_tag, stream):
-        writer_driver_cls = writer_manager.find_driver(format_tag)
-        self._writer_driver = writer_driver_cls(stream)
+        self._writer_driver = Formatter(format_tag)
+        self._stream = stream
 
     @property
     def user_information(self):
-        return self._writer_driver.user_information
+        pass
 
     @user_information.setter
     def user_information(self, user_information):
-        self._writer_driver.user_information = user_information
+        self._writer_driver.write_user_information(
+            user_information, self._stream)
 
     @property
     def snapshot(self):
-        return self._writer_driver.snapshot
+        pass
 
     @snapshot.setter
     def snapshot(self, snapshot):
-        self._writer_driver.snapshot = snapshot
+        self._writer_driver.write_snapshot(snapshot, self._stream)
 
     @property
     def snapshots(self):
-        return self._writer_driver.snapshots
+        pass
 
     @snapshots.setter
     def snapshots(self, snapshots):
-        self._writer_driver.snapshots = snapshots
-
-    def write_user_information(self, user_information_obj, output_obj=None):
-        return self._writer_driver.write_user_information(
-            user_information_obj, output_obj)
-
-    def write_snapshot(self, snapshot_obj, output_obj=None):
-        return self._writer_driver.write_snapshot(snapshot_obj, output_obj)
+        for snapshot in snapshots:
+            self.snapshot = snapshot

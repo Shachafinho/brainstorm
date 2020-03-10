@@ -1,31 +1,30 @@
-import pathlib
+import contextlib
 
-from brainstorm.utils.drivers import FocusedConfig
-from brainstorm.utils.drivers import FocusedDriverManager
-
-
-reader_manager = FocusedDriverManager(FocusedConfig(
-    search_dir=pathlib.Path(__file__).parent.absolute(),
-    module_name='reader',
-    class_name='Reader',
-))
+from .formatter import Formatter
 
 
 class Reader:
     def __init__(self, format_tag, stream):
-        reader_driver_cls = reader_manager.find_driver(format_tag)
-        self._reader_driver = reader_driver_cls(stream)
+        self._reader_driver = Formatter(format_tag)
+        self._stream = stream
+        self._user_information = None
+        self._user_information_end_location = None
+
+    def _update_user_information(self):
+        if self._user_information is None:
+            self._user_information = \
+                self._reader_driver.read_user_information(self._stream)
+            self._user_information_end_location = self._stream.tell()
 
     @property
     def user_information(self):
-        return self._reader_driver.user_information
+        self._update_user_information()
+        return self._user_information
 
     @property
     def snapshots(self):
-        yield from self._reader_driver.snapshots
-
-    def read_user_information(self, input_obj):
-        return self._reader_driver.read_user_information(input_obj)
-
-    def read_snapshot(self, input_obj):
-        return self._reader_driver.read_snapshot(input_obj)
+        self._update_user_information()
+        self._stream.seek(self._user_information_end_location)
+        with contextlib.suppress(EOFError):
+            while True:
+                yield self._reader_driver.read_snapshot(self._stream)

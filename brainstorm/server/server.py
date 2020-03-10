@@ -2,9 +2,7 @@ import pathlib
 import threading
 import traceback
 
-from brainstorm.protocol import Hello as HelloMessage
-from brainstorm.protocol import Config as ConfigMessage
-from brainstorm.protocol import Snapshot as SnapshotMessage
+from brainstorm.formats import Formatter
 from brainstorm.utils import Listener
 
 
@@ -17,28 +15,31 @@ class Handler(threading.Thread):
         self._conn = connection
         self._publish = publish
 
-    def _get_hello(self):
-        return HelloMessage.deserialize(self._conn.receive_message())
+    def _get_message(self):
+        return self._conn.receive_message()
 
-    def _send_config(self):
-        config = ConfigMessage(SnapshotMessage.__slots__)
-        self._conn.send_message(config.serialize())
+    def _get_format_tag(self):
+        return self._get_message().decode()
 
-    def _get_snapshot(self):
-        return SnapshotMessage.deserialize(self._conn.receive_message())
+    def _get_user_information(self, formatter):
+        return formatter.read_user_information(self._get_message())
+
+    def _get_snapshot(self, formatter):
+        return formatter.read_snapshot(self._get_message())
 
     def run(self):
         try:
-            print(f'Waiting for hello message...')
-            hello = self._get_hello()
-            print(f'Got hello message: {hello}')
+            print(f'Waiting for format message...')
+            format_tag = self._get_format_tag()
+            print(f'Got format message: {format_tag!r}')
+            formatter = Formatter(format_tag)
 
-            print(f'Sending config message...')
-            self._send_config()
-            print('Done sending config message')
+            print(f'Waiting for user message...')
+            user_information = self._get_user_information(formatter)
+            print(f'Got user message: {user_information}')
 
             print(f'Waiting for snapshot message...')
-            snapshot = self._get_snapshot()
+            snapshot = self._get_snapshot(formatter)
             print(f'Got snapshot message: {snapshot}')
 
             print('Publishing snapshot...')
