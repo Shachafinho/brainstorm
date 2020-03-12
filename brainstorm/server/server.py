@@ -3,6 +3,7 @@ import threading
 import traceback
 
 from brainstorm.formats import Formatter
+from brainstorm.message_queue import Message as MQMessage
 from brainstorm.utils import Listener
 
 
@@ -42,8 +43,10 @@ class Handler(threading.Thread):
             snapshot = self._get_snapshot(formatter)
             print(f'Got snapshot message: {snapshot}')
 
-            print('Publishing snapshot...')
-            self._publish(str(snapshot))
+            mq_message = MQMessage(user_information, snapshot).serialize()
+            print(f'Publishing MQ message: {mq_message}...')
+            self._publish(mq_message)
+            print('Done publishing MQ message')
 
             # context = Context(self.data_dir, hello.user_id, snapshot.timestamp)
             # self.parser_manager.parse(context, snapshot)
