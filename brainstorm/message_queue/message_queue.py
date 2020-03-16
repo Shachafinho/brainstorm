@@ -14,6 +14,8 @@ mq_manager = FocusedDriverManager(FocusedConfig(
 
 
 class MessageQueue:
+    DEFAULT_TOPIC = 'snapshot'
+
     def __init__(self, url):
         url = furl(url)
         driver_cls = mq_manager.find_driver(url.scheme)
@@ -27,9 +29,11 @@ class MessageQueue:
         return self._driver.__exit__(exc_type, exc_value, exc_traceback)
 
     def publish(self, message, topic=None, key=None):
+        topic = topic if topic is not None else self.DEFAULT_TOPIC
         self._driver.publish(message, topic, key)
 
     def subscribe(self, callback, topic=None, key=None):
+        topic = topic if topic is not None else self.DEFAULT_TOPIC
         self._driver.subscribe(callback, topic, key)
 
     def consume_forever(self):
@@ -39,6 +43,7 @@ class MessageQueue:
 if __name__ == '__main__':
     import json
     import sys
+    import tempfile
 
     d = {'a': 1, 'b': 2}
     with MessageQueue('rabbitmq://127.0.0.1:5672/') as mq:
@@ -46,9 +51,13 @@ if __name__ == '__main__':
             print(f'Publishing {json.dumps(d)}')
             mq.publish(json.dumps(d))
         elif sys.argv[1].startswith('sub'):
-            def cb(msg, key):
-                print(f'Consumed msg {msg!r} using routing key: {key!r}')
-            print('Registering consumer')
-            mq.subscribe(cb)
+            topic = sys.argv[2] if len(sys.argv) > 2 else None
+            def cb(msg):
+                with tempfile.NamedTemporaryFile(delete=False) as f:
+                    print(f'Consumed msg {msg!r}')
+                    print(f'Saving message to file: {f.name}')
+                    f.write(msg)
+            print(f'Registering consumer on topic {topic!r}')
+            mq.subscribe(cb, topic=topic)
             print('Consuming forever!')
             mq.consume_forever()

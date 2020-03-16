@@ -1,8 +1,9 @@
-import functools
+import sys
 
 import click
 
 from . import parse as _parse
+from .agent import Agent
 from brainstorm.message_queue import MessageQueue
 
 
@@ -15,7 +16,9 @@ def main():
 @click.argument('parser-name')
 @click.argument('raw-data-file', type=click.File('rb'))
 def parse(parser_name, raw_data_file):
-    _parse(parser_name, raw_data_file.read())
+    result = _parse(parser_name, raw_data_file.read())
+    sys.stdout.write(result.decode())
+    sys.stdout.flush()
 
 
 @main.command()
@@ -23,8 +26,7 @@ def parse(parser_name, raw_data_file):
 @click.argument('mq-url')
 def run_parser(parser_name, mq_url):
     with MessageQueue(mq_url) as mq:
-        mq.subscribe(functools.partial(_parse, parser_name))
-        mq.consume_forever()
+        Agent.from_parser_name(mq, parser_name).run()
 
 
 if __name__ == '__main__':

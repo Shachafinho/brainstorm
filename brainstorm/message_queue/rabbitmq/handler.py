@@ -8,14 +8,13 @@ from furl import furl
 def callback_wrapper(func):
     @functools.wraps(func)
     def wrapper(ch, method, props, body):
-        func(body, method.routing_key)
+        func(body)
         ch.basic_ack(delivery_tag=method.delivery_tag)
     return wrapper
 
 
 class Handler:
-    DEFAULT_EXCHANGE = 'topic_main'
-    DEFAULT_KEY = 'snapshot'
+    DEFAULT_KEY = '#'
 
     def __init__(self, url):
         self._connection = None
@@ -27,8 +26,6 @@ class Handler:
 
         self._connection = pika.BlockingConnection(self._connection_params)
         self._channel = self._connection.channel()
-        self._channel.exchange_declare(
-            exchange=self.DEFAULT_EXCHANGE, exchange_type='topic')
 
     def __enter__(self):
         return self
@@ -38,21 +35,24 @@ class Handler:
             self._connection.close()
 
     def publish(self, message, topic=None, key=None):
-        exchange = topic or self.DEFAULT_EXCHANGE
         key = key or self.DEFAULT_KEY
 
+        self._channel.exchange_declare(
+            exchange=topic, exchange_type='topic')
         self._channel.basic_publish(
-            exchange=exchange, routing_key=key, body=message,
+            exchange=topic, routing_key=key, body=message,
             properties=pika.BasicProperties(delivery_mode=2))
 
     def subscribe(self, callback, topic=None, key=None):
-        exchange = topic or self.DEFAULT_EXCHANGE
         key = key or self.DEFAULT_KEY
 
         result = self._channel.queue_declare('', exclusive=True)
         queue_name = result.method.queue
+
+        self._channel.exchange_declare(
+            exchange=topic, exchange_type='topic')
         self._channel.queue_bind(
-            exchange=exchange, queue=queue_name, routing_key=key)
+            exchange=topic, queue=queue_name, routing_key=key)
         self._channel.basic_consume(
             queue=queue_name, on_message_callback=callback_wrapper(callback))
 

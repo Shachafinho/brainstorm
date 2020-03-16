@@ -7,9 +7,6 @@ from brainstorm.message_queue import Message as MQMessage
 from brainstorm.utils import Listener
 
 
-PARSERS_DIR = pathlib.Path(__file__).parent.parent.absolute() / 'parsers'
-
-
 class Handler(threading.Thread):
     def __init__(self, connection, publish):
         super().__init__()
@@ -48,8 +45,6 @@ class Handler(threading.Thread):
             self._publish(mq_message)
             print('Done publishing MQ message')
 
-            # context = Context(self.data_dir, hello.user_id, snapshot.timestamp)
-            # self.parser_manager.parse(context, snapshot)
         except ConnectionError:
             print(f'Caught exception: {traceback.format_exc()}')
 
