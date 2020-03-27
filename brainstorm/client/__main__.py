@@ -1,3 +1,5 @@
+import traceback
+
 import click
 
 from . import upload_sample as _upload_sample
@@ -15,7 +17,10 @@ def main():
               help='Server port to which the sample is uploaded')
 @click.argument('sample-url')
 def upload_sample(host, port, sample_url):
-    _upload_sample(host, port, sample_url)
+    try:
+        _upload_sample(host, port, sample_url)
+    except ConnectionError as e:
+        print(f'Failed to connect to server: {e}')
 
 
 if __name__ == '__main__':

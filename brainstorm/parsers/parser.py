@@ -30,8 +30,8 @@ class Parser:
     def __init__(self, parser_name):
         self._parser_driver = parser_manager.find_driver(parser_name)
 
-    def __call__(self, message):
-        return self._parser_driver(message)
+    def __call__(self, context, message):
+        return self._parser_driver(context, message)
 
     @property
     def bindings(self):
@@ -39,11 +39,6 @@ class Parser:
             return getattr(self._parser_driver, BINDINGS_FIELD)
 
         return [(None, getattr(self._parser_driver, TAG_FIELD))]
-
-
-def parse(parser_name, data):
-    parser = Parser(parser_name)
-    return parser(data)
 
 
 if __name__ == '__main__':

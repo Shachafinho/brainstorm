@@ -68,7 +68,7 @@ class ExhaustiveConfig:
 
         # The following are allowed to be empty.
         self.module_drivers_extractor = module_drivers_extractor or \
-            functools.partial(extract_module_drivers, tag_field=tag_field)
+            extract_module_drivers
 
 
 def _find_all_drivers(config):

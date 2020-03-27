@@ -15,8 +15,13 @@ def main():
 @main.command()
 @click.argument('parser-name')
 @click.argument('raw-data-file', type=click.File('rb'))
-def parse(parser_name, raw_data_file):
-    result = _parse(parser_name, raw_data_file.read())
+@click.option('-i', '--input-topic', type=str, default=None,
+              help='The topic from which the data originates')
+@click.option('-o', '--output-topic', type=str, default=None,
+              help='The topic from which the data originates')
+def parse(parser_name, raw_data_file, input_topic, output_topic):
+    result = _parse(parser_name, raw_data_file.read(),
+                    input_topic=input_topic, output_topic=output_topic)
     sys.stdout.write(result.decode())
     sys.stdout.flush()
 

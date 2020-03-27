@@ -2,19 +2,20 @@ import pathlib
 
 from furl import furl
 
-from brainstorm.utils.drivers import FocusedConfig
+from .topic import Topic
+from brainstorm.utils.drivers import DirectoryFocusedConfig
 from brainstorm.utils.drivers import FocusedDriverManager
 
 
-mq_manager = FocusedDriverManager(FocusedConfig(
-    search_dir=pathlib.Path(__file__).parent.absolute(),
+mq_manager = FocusedDriverManager(DirectoryFocusedConfig(
+    search_dir=pathlib.Path(__file__).parent.absolute() / 'handlers',
     module_name='handler',
     class_name='Handler',
 ))
 
 
 class MessageQueue:
-    DEFAULT_TOPIC = 'snapshot'
+    DEFAULT_TOPIC = Topic().name
 
     def __init__(self, url):
         url = furl(url)

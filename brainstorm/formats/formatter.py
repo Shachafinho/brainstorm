@@ -1,10 +1,10 @@
 import pathlib
 
-from brainstorm.utils.drivers import FocusedConfig
+from brainstorm.utils.drivers import DirectoryFocusedConfig
 from brainstorm.utils.drivers import FocusedDriverManager
 
 
-formatter_manager = FocusedDriverManager(FocusedConfig(
+formatter_manager = FocusedDriverManager(DirectoryFocusedConfig(
     search_dir=pathlib.Path(__file__).parent.absolute(),
     module_name='formatter',
     class_name='Formatter',

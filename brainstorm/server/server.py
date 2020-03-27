@@ -3,7 +3,8 @@ import threading
 import traceback
 
 from brainstorm.formats import Formatter
-from brainstorm.message_queue import Message as MQMessage
+from brainstorm.message_queue import Context
+from brainstorm.message_queue import Topic
 from brainstorm.utils import Listener
 
 
@@ -40,13 +41,16 @@ class Handler(threading.Thread):
             snapshot = self._get_snapshot(formatter)
             print(f'Got snapshot message: {snapshot}')
 
-            mq_message = MQMessage(user_information, snapshot).serialize()
-            print(f'Publishing MQ message: {mq_message}...')
-            self._publish(mq_message)
-            print('Done publishing MQ message')
+            context = Context(user_information.user_id, snapshot.timestamp)
+            snapshot_message = Topic('snapshot').serialize(context, snapshot)
+            print(f'Publishing snapshot message: {snapshot_message}...')
+            self._publish(snapshot_message)
+            print('Done publishing snapshot message')
 
         except ConnectionError:
-            print(f'Caught exception: {traceback.format_exc()}')
+            print(f'Client disconnected')
+        except Exception:
+            print(f'Unexpected error: {traceback.format_exc()}')
 
 
 def run_server(host, port, publish):

@@ -1,4 +1,6 @@
 class Feelings:
+    __slots__ = 'hunger', 'thirst', 'exhaustion', 'happiness'
+
     def __init__(self, hunger, thirst, exhaustion, happiness):
         self.hunger = hunger
         self.thirst = thirst
