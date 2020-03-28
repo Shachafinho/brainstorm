@@ -38,7 +38,7 @@ class Parser:
         if hasattr(self._parser_driver, BINDINGS_FIELD):
             return getattr(self._parser_driver, BINDINGS_FIELD)
 
-        return [(None, getattr(self._parser_driver, TAG_FIELD))]
+        return (None, getattr(self._parser_driver, TAG_FIELD))
 
 
 if __name__ == '__main__':

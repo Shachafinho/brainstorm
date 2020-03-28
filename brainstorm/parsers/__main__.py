@@ -15,13 +15,8 @@ def main():
 @main.command()
 @click.argument('parser-name')
 @click.argument('raw-data-file', type=click.File('rb'))
-@click.option('-i', '--input-topic', type=str, default=None,
-              help='The topic from which the data originates')
-@click.option('-o', '--output-topic', type=str, default=None,
-              help='The topic from which the data originates')
 def parse(parser_name, raw_data_file, input_topic, output_topic):
-    result = _parse(parser_name, raw_data_file.read(),
-                    input_topic=input_topic, output_topic=output_topic)
+    result = _parse(parser_name, raw_data_file.read())
     sys.stdout.write(result.decode())
     sys.stdout.flush()
 
@@ -31,7 +26,7 @@ def parse(parser_name, raw_data_file, input_topic, output_topic):
 @click.argument('mq-url')
 def run_parser(parser_name, mq_url):
     with MessageQueue(mq_url) as mq:
-        Agent.from_parser_name(mq, parser_name).run()
+        Agent.from_parsers_names(mq, [parser_name]).run()
 
 
 if __name__ == '__main__':

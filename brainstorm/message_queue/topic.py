@@ -16,37 +16,10 @@ topic_manager = FocusedDriverManager(ModuleFocusedConfig(
 ))
 
 
-def _context_from_mq(context_dict):
-    timestamp = Arrow.utcfromtimestamp(context_dict['timestamp']) \
-        if 'timestamp' in context_dict else None
-    return Context(
-        user_id=context_dict['user_id'],
-        snapshot_timestamp=timestamp,
-        data_dir=context_dict['data_dir'],
-    )
-
-
-def _context_to_mq(context_obj):
-    context_dict =  {
-        'user_id': context_obj.user_id,
-        'data_dir': str(context_obj.data_dir),
-    }
-    if context_obj.timestamp:
-        context_dict['timestamp'] = context_obj.timestamp.float_timestamp
-
-    return context_dict
-
-
 def _deserialize_data(input_obj):
     if isinstance(input_obj, bytes):
         return json.loads(input_obj)
     return json.load(input_obj)
-
-
-def _deserialize_message(input_obj):
-    message_dict = _deserialize_data(input_obj)
-    context = _context_from_mq(message_dict.pop('context'))
-    return context, message_dict
 
 
 def _serialize_data(data_dict, output_obj=None):
@@ -54,13 +27,6 @@ def _serialize_data(data_dict, output_obj=None):
     if output_obj is None:
         return serialized_data
     return output_obj.write(serialized_data)
-
-
-def _serialize_message(context, obj_dict, output_obj=None):
-    return _serialize_data({
-        'context': _context_to_mq(context),
-        **obj_dict,
-    }, output_obj)
 
 
 class Topic:
@@ -73,12 +39,17 @@ class Topic:
         return self._name
 
     def serialize(self, context, obj, output_obj=None):
-        serialized_obj = self._topic.serialize(context, obj)
-        return _serialize_message(context, serialized_obj, output_obj)
+        serialized_message = {
+            'context': context.serialize(),
+            **self._topic.serialize(context, obj),
+        }
+        return _serialize_data(serialized_message, output_obj)
 
-    def deserialize(self, message_data):
-        context, serialized_obj = _deserialize_message(message_data)
-        return context, self._topic.deserialize(serialized_obj)
+    def deserialize(self, serialized_data):
+        serialized_message = _deserialize_data(serialized_data)
+        context = Context.deserialize(serialized_message.pop('context'))
+        obj = self._topic.deserialize(serialized_message)
+        return context, obj
 
 
 if __name__ == '__main__':

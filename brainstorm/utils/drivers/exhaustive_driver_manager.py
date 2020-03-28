@@ -87,8 +87,19 @@ def _erronous_find_driver(driver_tag):
 
 class ExhaustiveDriverManager:
     def __init__(self, config, drivers=None):
-        drivers = _find_all_drivers(config) if drivers is None else drivers
+        self._config = config
         self._driver_manager = DriverManager(_erronous_find_driver, drivers)
 
+    @property
+    def drivers(self):
+        return self._driver_manager.drivers
+
+    @drivers.setter
+    def drivers(self, drivers):
+        self._driver_manager.drivers = drivers
+
     def find_driver(self, driver_tag):
+        # Lazy initialization
+        if not self.drivers:
+            self.drivers = _find_all_drivers(self._config)
         return self._driver_manager.find_driver(driver_tag)

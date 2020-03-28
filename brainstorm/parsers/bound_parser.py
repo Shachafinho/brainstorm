@@ -2,21 +2,32 @@ from .parser import Parser
 from brainstorm.message_queue import Topic
 
 
-def bind_parse(parser, input_topic=None, output_topic=None):
-    # Use default topics if none were provided, otherwise use them as-is.
-    # Note that invalid topics may cause errors.
-    if not input_topic and not output_topic:
-        input_topic, output_topic = parser.bindings[0]
+class BoundParser:
+    def __init__(self, parser):
+        self._parser = parser
+        self._input_topic = None
+        self._output_topic = None
 
-    def _bound_parse(serialized_message):
-        # Empty output topic discards the result.
-        context, message = Topic(input_topic).deserialize(serialized_message)
-        result = parser(context, message)
-        return Topic(output_topic).serialize(context, result) \
-            if output_topic else ''
-    return _bound_parse
+    @property
+    def input_topic(self):
+        if not self._input_topic:
+            self._input_topic = self._parser.bindings[0]
+        return self._input_topic
+
+    @property
+    def output_topic(self):
+        if not self._output_topic:
+            self._output_topic = self._parser.bindings[1]
+        return self._output_topic
+
+    def __call__(self, serialized_message):
+        context, message = \
+            Topic(self.input_topic).deserialize(serialized_message)
+        result = self._parser(context, message)
+        return Topic(self.output_topic).serialize(context, result) \
+            if self.output_topic else result
 
 
-def parse(parser_name, data, input_topic=None, output_topic=None):
-    bound_parse = bind_parse(Parser(parser_name), input_topic, output_topic)
-    return bound_parse(data)
+def parse(parser_name, data):
+    bound_parser = BoundParser(Parser(parser_name))
+    return bound_parser(data)

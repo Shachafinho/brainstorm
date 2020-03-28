@@ -57,5 +57,13 @@ class FocusedDriverManager:
         find_driver = functools.partial(_find_focused_driver, config=config)
         self._driver_manager = DriverManager(find_driver, drivers)
 
+    @property
+    def drivers(self):
+        return self._driver_manager.drivers
+
+    @drivers.setter
+    def drivers(self, drivers):
+        self._driver_manager.drivers = drivers
+
     def find_driver(self, driver_tag):
         return self._driver_manager.find_driver(driver_tag)
