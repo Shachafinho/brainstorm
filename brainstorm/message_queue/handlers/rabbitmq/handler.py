@@ -30,7 +30,7 @@ class Handler:
     def __enter__(self):
         return self
 
-    def __exit__(self, exc_type, exc_vaue, exc_traceback):
+    def __exit__(self, exc_type, exc_value, exc_traceback):
         if self._connection:
             self._connection.close()
 

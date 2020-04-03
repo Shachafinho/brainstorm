@@ -15,7 +15,7 @@ def main():
 @main.command()
 @click.argument('parser-name')
 @click.argument('raw-data-file', type=click.File('rb'))
-def parse(parser_name, raw_data_file, input_topic, output_topic):
+def parse(parser_name, raw_data_file):
     result = _parse(parser_name, raw_data_file.read())
     sys.stdout.write(result.decode())
     sys.stdout.flush()

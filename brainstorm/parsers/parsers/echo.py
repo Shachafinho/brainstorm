@@ -1,3 +1,6 @@
+# This is a dummy parser and is not in use.
+
+
 class EchoParser:
     tag = 'echo'
     bindings = ('snapshot', None)
