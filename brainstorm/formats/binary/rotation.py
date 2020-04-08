@@ -1,6 +1,6 @@
 import construct
 
-from brainstorm.common.rotation import Rotation
+from brainstorm.common import Rotation
 
 
 _rotation = construct.Struct(

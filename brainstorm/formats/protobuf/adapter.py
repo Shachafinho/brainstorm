@@ -1,10 +1,11 @@
-from arrow import Arrow
+import arrow
 
 from . import sample_pb2
 
 from brainstorm.common import ColorImage
 from brainstorm.common import DepthImage
 from brainstorm.common import Feelings
+from brainstorm.common import Pose
 from brainstorm.common import Rotation
 from brainstorm.common import Snapshot
 from brainstorm.common import Translation
@@ -31,8 +32,9 @@ def user_information_from_protobuf(user_information_message):
     return UserInformation(
         user_id=user_information_message.user_id,
         name=user_information_message.username,
-        birth_date=Arrow.utcfromtimestamp(user_information_message.birthday),
-        gender=_gender_to_str(user_information_message.gender))
+        birth_date=arrow.get(user_information_message.birthday),
+        gender=_gender_to_str(user_information_message.gender),
+    )
 
 
 def translation_from_protobuf(translation_message):
@@ -48,7 +50,14 @@ def rotation_from_protobuf(rotation_message):
         x=rotation_message.x,
         y=rotation_message.y,
         z=rotation_message.z,
-        w=rotation_message.w
+        w=rotation_message.w,
+    )
+
+
+def pose_from_protobuf(pose_message):
+    return Pose(
+        translation=translation_from_protobuf(pose_message.translation),
+        rotation=rotation_from_protobuf(pose_message.rotation),
     )
 
 
@@ -56,7 +65,7 @@ def color_image_from_protobuf(color_image_message):
     return ColorImage(
         width=color_image_message.width,
         height=color_image_message.height,
-        data=color_image_message.data
+        data=color_image_message.data,
     )
 
 
@@ -64,7 +73,7 @@ def depth_image_from_protobuf(depth_image_message):
     return DepthImage(
         width=depth_image_message.width,
         height=depth_image_message.height,
-        data=[num for num in depth_image_message.data]
+        data=[num for num in depth_image_message.data],
     )
 
 
@@ -73,16 +82,14 @@ def feelings_from_protobuf(feelings_message):
         hunger=feelings_message.hunger,
         thirst=feelings_message.thirst,
         exhaustion=feelings_message.exhaustion,
-        happiness=feelings_message.happiness
+        happiness=feelings_message.happiness,
     )
 
 
 def snapshot_from_protobuf(snapshot_message):
     return Snapshot(
-        timestamp=Arrow.utcfromtimestamp(snapshot_message.datetime / 1000),
-        translation=translation_from_protobuf(
-            snapshot_message.pose.translation),
-        rotation=rotation_from_protobuf(snapshot_message.pose.rotation),
+        timestamp=arrow.get(snapshot_message.datetime / 1000),
+        pose=pose_from_protobuf(snapshot_message.pose),
         color_image=color_image_from_protobuf(snapshot_message.color_image),
         depth_image=depth_image_from_protobuf(snapshot_message.depth_image),
         feelings=feelings_from_protobuf(snapshot_message.feelings),
@@ -94,7 +101,8 @@ def user_information_to_protobuf(user_information_obj):
         user_id=user_information_obj.user_id,
         username=user_information_obj.name,
         birthday=int(user_information_obj.birth_date.float_timestamp),
-        gender=_str_to_gender(user_information_obj.gender))
+        gender=_str_to_gender(user_information_obj.gender),
+    )
 
 
 def translation_to_protobuf(translation_obj):
@@ -111,6 +119,13 @@ def rotation_to_protobuf(rotation_obj):
         y=rotation_obj.y,
         z=rotation_obj.z,
         w=rotation_obj.w,
+    )
+
+
+def pose_to_protobuf(pose_obj):
+    return sample_pb2.Pose(
+        translation=translation_to_protobuf(pose_obj.translation),
+        rotation=rotation_to_protobuf(pose_obj.rotation),
     )
 
 
@@ -142,10 +157,7 @@ def feelings_to_protobuf(feelings_obj):
 def snapshot_to_protobuf(snapshot_obj):
     return sample_pb2.Snapshot(
         datetime=int(snapshot_obj.timestamp.float_timestamp * 1000),
-        pose=sample_pb2.Pose(
-            translation=translation_to_protobuf(snapshot_obj.translation),
-            rotation=rotation_to_protobuf(snapshot_obj.rotation),
-        ),
+        pose=pose_to_protobuf(snapshot_obj.pose),
         color_image=color_image_to_protobuf(snapshot_obj.color_image),
         depth_image=depth_image_to_protobuf(snapshot_obj.depth_image),
         feelings=feelings_to_protobuf(snapshot_obj.feelings),

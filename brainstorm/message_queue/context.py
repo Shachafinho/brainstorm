@@ -1,6 +1,6 @@
 import pathlib
 
-from arrow import Arrow
+import arrow
 
 from brainstorm.utils.paths import ROOT_DIR
 
@@ -41,7 +41,7 @@ class Context:
 
     @classmethod
     def deserialize(cls, context_dict):
-        timestamp = Arrow.utcfromtimestamp(context_dict['timestamp']) \
+        timestamp = arrow.get(context_dict['timestamp']) \
             if 'timestamp' in context_dict else None
         return cls(
             user_id=context_dict['user_id'],

@@ -1,6 +1,6 @@
 import construct
 
-from brainstorm.common.depth_image import DepthImage
+from brainstorm.common import DepthImage
 
 
 _depth_image = construct.Struct(

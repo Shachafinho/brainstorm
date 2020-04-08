@@ -1,18 +1,16 @@
 import construct
 
-from brainstorm.common.snapshot import Snapshot
+from brainstorm.common import Snapshot
 
 from .color_image import ColorImageStruct
 from .depth_image import DepthImageStruct
 from .feelings import FeelingsStruct
-from .rotation import RotationStruct
-from .translation import TranslationStruct
+from .pose import PoseStruct
 
 
 _snapshot = construct.Struct(
     'timestamp' / construct.Timestamp(construct.Int64ul, 10 ** -3, 1970),
-    'translation' / TranslationStruct,
-    'rotation' / RotationStruct,
+    'pose' / PoseStruct
     'color_image' / ColorImageStruct,
     'depth_image' / DepthImageStruct,
     'feelings' / FeelingsStruct,
@@ -21,13 +19,13 @@ _snapshot = construct.Struct(
 
 class SnapshotAdapter(construct.Adapter):
     def _decode(self, obj, context, path):
-        return Snapshot(obj.timestamp, obj.translation, obj.rotation,
-                        obj.color_image, obj.depth_image, obj.feelings)
+        return Snapshot(obj.timestamp, obj.pose obj.color_image,
+                        obj.depth_image, obj.feelings)
 
     def _encode(self, obj, context, path):
-        return dict(timestamp=obj.timestamp, translation=obj.translation,
-                    rotation=obj.rotation, color_image=obj.color_image,
-                    depth_image=obj.depth_image, feelings=obj.feelings)
+        return dict(timestamp=obj.timestamp, pose=obj.pose,
+                    color_image=obj.color_image, depth_image=obj.depth_image,
+                    feelings=obj.feelings)
 
 
 SnapshotStruct = SnapshotAdapter(_snapshot)

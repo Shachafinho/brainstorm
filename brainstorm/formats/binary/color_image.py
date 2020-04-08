@@ -2,7 +2,7 @@ import itertools
 
 import construct
 
-from brainstorm.common.color_image import ColorImage
+from brainstorm.common import ColorImage
 
 
 def grouper(iterable, n, fillvalue=None):

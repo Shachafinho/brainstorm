@@ -1,6 +1,6 @@
 import construct
 
-from brainstorm.common.feelings import Feelings
+from brainstorm.common import Feelings
 
 
 _feelings = construct.Struct(

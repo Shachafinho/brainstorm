@@ -1,6 +1,6 @@
 import construct
 
-from brainstorm.common.translation import Translation
+from brainstorm.common import Translation
 
 
 _translation = construct.Struct(

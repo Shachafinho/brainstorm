@@ -1,7 +1,7 @@
 import json
 import pathlib
 
-from arrow import Arrow
+import arrow
 
 from .context import Context
 from brainstorm.utils.drivers import FocusedDriverManager
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     topic = Topic('snapshot')
     print(f'topic.name: {topic.name}')
 
-    context = Context(123, Arrow.now())
+    context = Context(123, arrow.utcnow())
     snapshot = 'hello'
 
     print(f'calling topic serialize')

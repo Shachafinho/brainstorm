@@ -1,6 +1,6 @@
 import construct
 
-from brainstorm.common.user_information import UserInformation
+from brainstorm.common import UserInformation
 
 
 _user_information = construct.Struct(
