@@ -1,8 +1,7 @@
 import functools
 
+import furl.furl as furl
 import pika
-
-from furl import furl
 
 
 def callback_wrapper(func):

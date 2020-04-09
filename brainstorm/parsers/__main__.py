@@ -2,8 +2,8 @@ import sys
 
 import click
 
-from . import parse as _parse
 from .agent import Agent
+from .bound_parser import parse as _parse
 from brainstorm.message_queue import MessageQueue
 
 

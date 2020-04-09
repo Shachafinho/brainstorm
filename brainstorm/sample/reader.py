@@ -1,4 +1,4 @@
-from furl import furl
+import furl.furl as furl
 
 from brainstorm.formats.reader import Reader as FormatReader
 from brainstorm.formats.opener import get_opener

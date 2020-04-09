@@ -1,8 +1,8 @@
 import click
 
-from . import run_server
-from . import run_webserver
-from . import Reader
+from .sample import Reader
+from .server import run_server
+from .web import run_webserver
 
 
 @click.group()

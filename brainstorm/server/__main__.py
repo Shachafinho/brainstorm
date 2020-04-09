@@ -1,6 +1,6 @@
 import click
 
-from . import run_server as _run_server
+from .server import run_server as _run_server
 from brainstorm.message_queue import MessageQueue
 
 

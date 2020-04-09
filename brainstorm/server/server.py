@@ -26,6 +26,22 @@ class Handler(threading.Thread):
     def _get_snapshot(self, formatter):
         return formatter.read_snapshot(self._get_message())
 
+    def _publish_user_information_message(self, user_information):
+        user_context = Context(user_information.user_id)
+        user_message = Topic('user_information').serialize(
+            user_context, user_information)
+        print(f'Publishing user information message: {user_message}...')
+        self._publish(user_message)
+        print('Done publishing user information message')
+
+    def _publish_snapshot_message(self, user_id, snapshot):
+        snapshot_context = Context(user_id, snapshot.timestamp)
+        snapshot_message = Topic('snapshot').serialize(
+            snapshot_context, snapshot)
+        print(f'Publishing snapshot message: {snapshot_message}...')
+        self._publish(snapshot_message)
+        print('Done publishing snapshot message')
+
     def run(self):
         try:
             print(f'Waiting for format message...')
@@ -41,11 +57,8 @@ class Handler(threading.Thread):
             snapshot = self._get_snapshot(formatter)
             print(f'Got snapshot message: {snapshot}')
 
-            context = Context(user_information.user_id, snapshot.timestamp)
-            snapshot_message = Topic('snapshot').serialize(context, snapshot)
-            print(f'Publishing snapshot message: {snapshot_message}...')
-            self._publish(snapshot_message)
-            print('Done publishing snapshot message')
+            # self._publish_user_information_message(user_information)
+            self._publish_snapshot_message(user_information.user_id, snapshot)
 
         except ConnectionError:
             print(f'Client disconnected')

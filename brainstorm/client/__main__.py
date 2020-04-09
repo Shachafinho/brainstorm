@@ -1,8 +1,6 @@
-import traceback
-
 import click
 
-from . import upload_sample as _upload_sample
+from .client import upload_sample as _upload_sample
 
 
 @click.group()

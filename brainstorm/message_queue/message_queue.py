@@ -1,6 +1,6 @@
 import pathlib
 
-from furl import furl
+import furl.furl as furl
 
 from .topic import Topic
 from brainstorm.utils.drivers import DirectoryFocusedConfig
