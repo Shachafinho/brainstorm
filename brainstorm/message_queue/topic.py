@@ -8,7 +8,7 @@ from brainstorm.utils.drivers import FocusedDriverManager
 from brainstorm.utils.drivers import ModuleFocusedConfig
 
 
-DEFAULT_NAME = 'snapshot'
+DEFAULT_NAME = 'whole_data'
 
 
 topic_manager = FocusedDriverManager(ModuleFocusedConfig(

@@ -5,6 +5,9 @@ import traceback
 from brainstorm.formats import Formatter
 from brainstorm.message_queue import Context
 from brainstorm.message_queue import Topic
+from brainstorm.message_queue.objects import Snapshot as MQSnapshot
+from brainstorm.message_queue.objects import UserInformation as MQUser
+from brainstorm.message_queue.objects import WholeData as MQWholeData
 from brainstorm.utils import Listener
 
 
@@ -26,21 +29,17 @@ class Handler(threading.Thread):
     def _get_snapshot(self, formatter):
         return formatter.read_snapshot(self._get_message())
 
-    def _publish_user_information_message(self, user_information):
-        user_context = Context(user_information.user_id)
-        user_message = Topic('user_information').serialize(
-            user_context, user_information)
-        print(f'Publishing user information message: {user_message}...')
-        self._publish(user_message)
-        print('Done publishing user information message')
-
-    def _publish_snapshot_message(self, user_id, snapshot):
-        snapshot_context = Context(user_id, snapshot.timestamp)
-        snapshot_message = Topic('snapshot').serialize(
-            snapshot_context, snapshot)
-        print(f'Publishing snapshot message: {snapshot_message}...')
-        self._publish(snapshot_message)
-        print('Done publishing snapshot message')
+    def _publish_whole_data_message(self, user_information, snapshot):
+        context = Context(user_information.user_id, snapshot.timestamp)
+        mq_user = MQUser(user_information.user_id, user_information.name,
+                         user_information.birth_date, user_information.gender)
+        mq_snapshot = MQSnapshot(snapshot)
+        mq_whole_data = MQWholeData(mq_user, mq_snapshot)
+        whole_data_message = Topic('whole_data').serialize(
+            context, mq_whole_data)
+        print(f'Publishing whole data message: {whole_data_message}...')
+        self._publish(whole_data_message)
+        print('Done publishing whole data message')
 
     def run(self):
         try:
@@ -57,8 +56,7 @@ class Handler(threading.Thread):
             snapshot = self._get_snapshot(formatter)
             print(f'Got snapshot message: {snapshot}')
 
-            # self._publish_user_information_message(user_information)
-            self._publish_snapshot_message(user_information.user_id, snapshot)
+            self._publish_whole_data_message(user_information, snapshot)
 
         except ConnectionError:
             print(f'Client disconnected')

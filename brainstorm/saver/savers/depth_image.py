@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import numpy as np
 
 from brainstorm.database.objects import DepthImage
 from brainstorm.message_queue import Topic
@@ -9,11 +8,15 @@ _RESULT_NAME = 'depth_image'
 
 
 def _mq_to_db(mq_depth_image, blob_store):
-    width, height = mq_depth_image.shape
     data_path = blob_store.path(
         subdir='depth_image', suffix='.png')
-    plt.imsave(data_path, depth_image)
-    return DepthImage(width, height, str(data_path))
+    plt.imsave(data_path, mq_depth_image.data)
+
+    return DepthImage(
+        mq_depth_image.width,
+        mq_depth_image.height,
+        str(data_path)
+    )
 
 
 class DepthImageSaver:

@@ -1,5 +1,3 @@
-import PIL.Image as Image
-
 from brainstorm.database.objects import ColorImage
 from brainstorm.message_queue import Topic
 
@@ -8,11 +6,15 @@ _RESULT_NAME = 'color_image'
 
 
 def _mq_to_db(mq_color_image, blob_store):
-    width, height = mq_color_image.size
     data_path = blob_store.path(
         subdir='color_image', suffix='.jpg')
-    mq_color_image.save(data_path)
-    return ColorImage(width, height, str(data_path))
+    mq_color_image.image.save(data_path)
+
+    return ColorImage(
+        mq_color_image.width,
+        mq_color_image.height,
+        str(data_path)
+    )
 
 
 class ColorImageSaver:

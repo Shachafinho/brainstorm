@@ -1,12 +1,9 @@
-import numpy as np
+from brainstorm.message_queue.objects import DepthImage
 
 
 def serialize(context, depth_image):
-    depth_image_path = context.path('depth_image.npy')
-    np.save(depth_image_path, depth_image)
-    return {'depth_image': str(depth_image_path)}
+    return depth_image.serialize(context)
 
 
-def deserialize(depth_image_dict):
-    depth_image_path = depth_image_dict['depth_image']
-    return np.load(depth_image_path)
+def deserialize(serialized_depth_image):
+    return DepthImage.deserialize(serialized_depth_image)
