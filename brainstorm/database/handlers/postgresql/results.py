@@ -21,13 +21,13 @@ _GET_REFERENCING_TABLES = '''
     SELECT
         (SELECT r.relname FROM pg_class r WHERE r.oid = c.conrelid) as table
     FROM pg_constraint c
-    WHERE c.confrelid = (SELECT oid FROM pg_class WHERE relname = %s);
+    WHERE c.confrelid = (SELECT oid FROM pg_class WHERE relname = '{table}');
 '''
-_GET_SUPPORTED_RESULTS = _GET_REFERENCING_TABLES % 'snapshots'
+_GET_SUPPORTED_RESULTS = _GET_REFERENCING_TABLES.format(table='snapshots')
 
 _GET_RESULT = '''
     SELECT *
-    FROM %s
+    FROM {table}
     WHERE (user_id = %s AND snapshot_timestamp = %s);
 '''
 
@@ -72,20 +72,21 @@ def _result_table_to_name(result_table):
     return result_table[:-1]
 
 
-def get_supported_results(connection):
+def _get_supported_results(connection):
     rows = []
     with connection.cursor() as cur:
         cur.execute(_GET_SUPPORTED_RESULTS)
         rows = cur.fetchall()
-    return [_result_table_to_name(row) for row in rows]
+    return [_result_table_to_name(row[0]) for row in rows]
 
 
 def get_result(connection, user_id, snapshot_timestamp, result_name):
     row = None
-    args = (_result_name_to_table(result_name), user_id, snapshot_timestamp)
+    result_table = _result_name_to_table(result_name)
+    args = (user_id, str(snapshot_timestamp))
     try:
         with connection.cursor() as cur:
-            cur.execute(_GET_RESULT, args)
+            cur.execute(_GET_RESULT.format(table=result_table), args)
             row = cur.fetchone()
     except psycopg2.errors.UndefinedTable:
         # Ignore missing tables
@@ -95,7 +96,7 @@ def get_result(connection, user_id, snapshot_timestamp, result_name):
 
 
 def get_results(connection, user_id, snapshot_timestamp):
-    supported_results = get_supported_results(connection)
+    supported_results = _get_supported_results(connection)
     return [result for result in supported_results if \
             get_result(connection, user_id, snapshot_timestamp, result)]
 

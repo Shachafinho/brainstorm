@@ -32,7 +32,7 @@ def get_snapshots(connection, user_id):
     with connection.cursor() as cur:
         cur.execute(_GET_SNAPSHOTS, (user_id,))
         rows = cur.fetchall()
-    return map(snapshot_from_row, rows)
+    return [snapshot_from_row(row) for row in rows]
 
 
 def get_snapshot(connection, user_id, snapshot_timestamp):

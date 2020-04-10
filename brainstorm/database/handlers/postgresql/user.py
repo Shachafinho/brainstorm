@@ -30,7 +30,7 @@ def get_users(connection):
     with connection.cursor() as cur:
         cur.execute(_GET_USERS)
         rows = cur.fetchall()
-    return map(user_information_from_row, rows)
+    return [user_information_from_row(row) for row in rows]
 
 
 def get_user(connection, user_id):
