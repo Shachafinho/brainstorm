@@ -30,13 +30,12 @@ class Handler(threading.Thread):
         return formatter.read_snapshot(self._get_message())
 
     def _publish_whole_data_message(self, user_information, snapshot):
-        context = Context(user_information.user_id, snapshot.timestamp)
         mq_user = MQUser(user_information.user_id, user_information.name,
                          user_information.birth_date, user_information.gender)
         mq_snapshot = MQSnapshot(snapshot)
         mq_whole_data = MQWholeData(mq_user, mq_snapshot)
         whole_data_message = Topic('whole_data').serialize(
-            context, mq_whole_data)
+            Context(), mq_whole_data)
         print(f'Publishing whole data message: {whole_data_message}...')
         self._publish(whole_data_message)
         print('Done publishing whole data message')

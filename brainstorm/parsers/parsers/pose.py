@@ -7,16 +7,16 @@ class PoseParser:
     tag = 'pose'
     bindings = ('snapshot', tag)
 
-    def __call__(self, context, snapshot):
+    def __call__(self, context, mq_snapshot):
         translation = Translation(
-            snapshot.pose.translation.x,
-            snapshot.pose.translation.y,
-            snapshot.pose.translation.z,
+            mq_snapshot.pose.translation.x,
+            mq_snapshot.pose.translation.y,
+            mq_snapshot.pose.translation.z,
         )
         rotation = Rotation(
-            snapshot.pose.rotation.x,
-            snapshot.pose.rotation.y,
-            snapshot.pose.rotation.z,
-            snapshot.pose.rotation.w,
+            mq_snapshot.pose.rotation.x,
+            mq_snapshot.pose.rotation.y,
+            mq_snapshot.pose.rotation.z,
+            mq_snapshot.pose.rotation.w,
         )
-        return Pose(translation, rotation)
+        return context, Pose(translation, rotation)

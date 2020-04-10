@@ -20,12 +20,12 @@ class BoundParser:
             self._output_topic = self._parser.bindings[1]
         return self._output_topic
 
-    def __call__(self, serialized_message):
-        context, message = \
-            Topic(self.input_topic).deserialize(serialized_message)
-        result = self._parser(context, message)
-        return Topic(self.output_topic).serialize(context, result) \
-            if self.output_topic else result
+    def __call__(self, serialized_mq_obj):
+        context, mq_obj = \
+            Topic(self.input_topic).deserialize(serialized_mq_obj)
+        context, result_obj = self._parser(context, mq_obj)
+        return Topic(self.output_topic).serialize(context, result_obj) \
+            if self.output_topic else (context, result)
 
 
 def parse(parser_name, data):

@@ -5,6 +5,6 @@ class EchoParser:
     tag = 'echo'
     bindings = ('snapshot', None)
 
-    def __call__(self, context, obj):
-        print(f'Got object: {obj}')
-        return obj
+    def __call__(self, context, mq_obj):
+        print(f'Got object: {mq_obj}')
+        return context, mq_obj

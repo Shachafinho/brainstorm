@@ -5,10 +5,10 @@ class FeelingsParser:
     tag = 'feelings'
     bindings = ('snapshot', tag)
 
-    def __call__(self, context, snapshot):
-        return Feelings(
-            snapshot.feelings.hunger,
-            snapshot.feelings.thirst,
-            snapshot.feelings.exhaustion,
-            snapshot.feelings.happiness,
+    def __call__(self, context, mq_snapshot):
+        return context, Feelings(
+            mq_snapshot.feelings.hunger,
+            mq_snapshot.feelings.thirst,
+            mq_snapshot.feelings.exhaustion,
+            mq_snapshot.feelings.happiness,
         )
