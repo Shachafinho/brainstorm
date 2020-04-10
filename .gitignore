@@ -2,3 +2,7 @@
 .pytest-cache/
 **/__pycache__
 docs/build/
+
+# Ignore data directories
+blobstore/
+mq_data/

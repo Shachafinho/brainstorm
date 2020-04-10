@@ -5,7 +5,7 @@ import arrow
 from brainstorm.utils.paths import ROOT_DIR
 
 
-DEFAULT_DATA_DIR = ROOT_DIR.parent / 'data'
+DEFAULT_DATA_DIR = ROOT_DIR.parent / 'mq_data'
 TIMESTAMP_FORMAT = 'YYYY-MM-DD_HH-mm-ss-SSSSSS'
 
 
@@ -13,7 +13,7 @@ class Context:
     def __init__(self, user_id, snapshot_timestamp=None, data_dir=None):
         self.user_id = user_id
         self.snapshot_timestamp = snapshot_timestamp
-        self.data_dir = pathlib.Path(data_dir) if data_dir is not None \
+        self.data_dir = pathlib.Path(str(data_dir)) if data_dir is not None \
             else DEFAULT_DATA_DIR
 
     def path(self, filename, *, create_dirs=True):

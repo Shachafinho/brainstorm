@@ -2,6 +2,13 @@ from brainstorm.database.objects import User
 from brainstorm.message_queue import Topic
 
 
+def _mq_to_db(mq_user_information):
+    return User(
+        mq_user_information.user_id, mq_user_information.name,
+        mq_user_information.birth_date, mq_user_information.gender,
+    )
+
+
 class UserInformationSaver:
     topic = 'user_information'
 
@@ -10,7 +17,9 @@ class UserInformationSaver:
         print(f'Saving MQ user information data: {data}')
         context.save('user.raw', data)
 
-        database.save_user(User(
-            mq_user_information.user_id, mq_user_information.name,
-            mq_user_information.birth_date, mq_user_information.gender,
-        ))
+        # Ensure the user doesn't already exist in the DB.
+        if database.get_user(mq_user_information.user_id):
+            return
+
+        # Save the user to the DB.
+        database.save_user(_mq_to_db(mq_user_information))

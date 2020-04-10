@@ -2,6 +2,7 @@ import pathlib
 
 import furl.furl as furl
 
+from .blob_store import BlobStore
 from brainstorm.utils.drivers import DirectoryFocusedConfig
 from brainstorm.utils.drivers import FocusedDriverManager
 
@@ -14,10 +15,15 @@ db_manager = FocusedDriverManager(DirectoryFocusedConfig(
 
 
 class Database:
-    def __init__(self, url):
+    def __init__(self, url, blob_store=None):
         url = furl(url)
         driver_cls = db_manager.find_driver(url.scheme)
         self._driver = driver_cls(url)
+        self._blob_store = blob_store or BlobStore()
+
+    @property
+    def blob_store(self):
+        return self._blob_store
 
     def __enter__(self):
         self._driver.__enter__()

@@ -44,10 +44,7 @@ class Handler:
         return user.get_user(self.connection, user_id)
 
     def save_user(self, user_obj):
-        try:
-            return user.save_user(self.connection, user_obj)
-        except psycopg2.errors.UniqueViolation:
-            self.connection.rollback()
+        return user.save_user(self.connection, user_obj)
 
     def get_snapshots(self, user_id):
         return snapshot.get_snapshots(self.connection, user_id)
@@ -57,11 +54,7 @@ class Handler:
             self.connection, user_id, snapshot_timestamp)
 
     def save_snapshot(self, user_id, snapshot_obj):
-        try:
-            return snapshot.save_snapshot(
-                self.connection, user_id, snapshot_obj)
-        except psycopg2.errors.UniqueViolation:
-            self.connection.rollback()
+        return snapshot.save_snapshot(self.connection, user_id, snapshot_obj)
 
     def get_results(self, user_id, snapshot_timestamp):
         return results.get_results(
@@ -73,9 +66,6 @@ class Handler:
 
     def save_result(self, user_id, snapshot_timestamp, result_name,
                     result_obj):
-        try:
-            return results.save_result(
-                self.connection, user_id, snapshot_timestamp, result_name,
-                result_obj)
-        except psycopg2.errors.UniqueViolation:
-            self.connection.rollback()
+        return results.save_result(
+            self.connection, user_id, snapshot_timestamp, result_name,
+            result_obj)
