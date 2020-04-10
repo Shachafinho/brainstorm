@@ -1,14 +1,29 @@
+import functools
+
 import furl.furl as furl
 import psycopg2
 
 from . import results
 from . import snapshot
 from . import user
+from brainstorm.database import DBError
 
 
 POSTGRES_DB = 'brainstorm'
 POSTGRES_USER = 'postgres'
 POSTGRES_PASSWORD = 'password'
+
+
+def safe_transaction(method):
+    @functools.wraps(method)
+    def _method(self, *args, **kwargs):
+        try:
+            return method(self, *args, **kwargs)
+        except (psycopg2.Error, Exception) as e:
+            if self.connection is not None:
+                self.connection.rollback()
+            raise DBError('DB operation failed') from e
+    return _method
 
 
 class Handler:
@@ -37,33 +52,42 @@ class Handler:
         if self.connection is not None:
             self.connection.close()
 
+    @safe_transaction
     def get_users(self):
         return user.get_users(self.connection)
 
+    @safe_transaction
     def get_user(self, user_id):
         return user.get_user(self.connection, user_id)
 
+    @safe_transaction
     def save_user(self, user_obj):
         return user.save_user(self.connection, user_obj)
 
+    @safe_transaction
     def get_snapshots(self, user_id):
         return snapshot.get_snapshots(self.connection, user_id)
 
+    @safe_transaction
     def get_snapshot(self, user_id, snapshot_timestamp):
         return snapshot.get_snapshot(
             self.connection, user_id, snapshot_timestamp)
 
+    @safe_transaction
     def save_snapshot(self, user_id, snapshot_obj):
         return snapshot.save_snapshot(self.connection, user_id, snapshot_obj)
 
+    @safe_transaction
     def get_results(self, user_id, snapshot_timestamp):
         return results.get_results(
             self.connection, user_id, snapshot_timestamp)
 
+    @safe_transaction
     def get_result(self, user_id, snapshot_timestamp, result_name):
         return results.get_result(
             self.connection, user_id, snapshot_timestamp, result_name)
 
+    @safe_transaction
     def save_result(self, user_id, snapshot_timestamp, result_name,
                     result_obj):
         return results.save_result(
