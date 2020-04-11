@@ -80,8 +80,4 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
 		PRIMARY KEY (user_id, snapshot_timestamp),
 		FOREIGN KEY (user_id, snapshot_timestamp) REFERENCES poses (user_id, snapshot_timestamp)
 	);
-
-
-	INSERT INTO users(id, name, birthday, gender)
-	VALUES(42, 'Dan Gittik', '1992-03-04 22:00:00+00:00', 'm');
 EOSQL

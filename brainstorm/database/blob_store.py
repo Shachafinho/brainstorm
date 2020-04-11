@@ -25,9 +25,9 @@ class BlobStore:
             return f.name
 
     def load(self, filename, subdir=None):
-        dir_path = self._get_dir_path(subdir)
-        return (dir_path / filename).read_bytes()
+        file_path = self._get_dir_path(subdir) / filename
+        return file_path.read_bytes()
 
     def save(self, filename, data, subdir=None):
-        dir_path = self._get_dir_path(subdir)
-        (dir_path / filename).write_bytes(data)
+        file_path = self._get_dir_path(subdir) / filename
+        file_path.write_bytes(data)

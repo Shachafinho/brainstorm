@@ -1,3 +1,4 @@
+import contextlib
 import functools
 
 import furl.furl as furl
@@ -14,19 +15,24 @@ POSTGRES_USER = 'postgres'
 POSTGRES_PASSWORD = 'password'
 
 
-def safe_transaction(method):
-    @functools.wraps(method)
-    def _method(self, *args, **kwargs):
-        try:
-            return method(self, *args, **kwargs)
-        except (psycopg2.Error, Exception) as e:
-            if self.connection is not None:
-                self.connection.rollback()
-            raise DBError('DB operation failed') from e
-    return _method
+@contextlib.contextmanager
+def _reraise_db_errors_context():
+    try:
+        yield
+    except (psycopg2.Error) as e:
+        raise DBError('DB operation failed') from e
+
+
+def _reraise_db_errors(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        with _reraise_db_errors_context():
+            return func(*args, **kwargs)
+    return wrapper
 
 
 class Handler:
+    @_reraise_db_errors
     def __init__(self, url):
         self._connection = None
 
@@ -48,48 +54,58 @@ class Handler:
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        self.connection.__exit__(exc_type, exc_value, exc_traceback)
         if self.connection is not None:
+            self.connection.__exit__(exc_type, exc_value, exc_traceback)
             self.connection.close()
 
-    @safe_transaction
+    @_reraise_db_errors
     def get_users(self):
-        return user.get_users(self.connection)
+        with self.connection:
+            return user.get_users(self.connection)
 
-    @safe_transaction
+    @_reraise_db_errors
     def get_user(self, user_id):
-        return user.get_user(self.connection, user_id)
+        with self.connection:
+            return user.get_user(self.connection, user_id)
 
-    @safe_transaction
+    @_reraise_db_errors
     def save_user(self, user_obj):
-        return user.save_user(self.connection, user_obj)
+        with self.connection:
+            return user.save_user(self.connection, user_obj)
 
-    @safe_transaction
+    @_reraise_db_errors
     def get_snapshots(self, user_id):
-        return snapshot.get_snapshots(self.connection, user_id)
+        with self.connection:
+            return snapshot.get_snapshots(self.connection, user_id)
 
-    @safe_transaction
+    @_reraise_db_errors
     def get_snapshot(self, user_id, snapshot_timestamp):
-        return snapshot.get_snapshot(
-            self.connection, user_id, snapshot_timestamp)
+        with self.connection:
+            return snapshot.get_snapshot(
+                self.connection, user_id, snapshot_timestamp)
 
-    @safe_transaction
+    @_reraise_db_errors
     def save_snapshot(self, user_id, snapshot_obj):
-        return snapshot.save_snapshot(self.connection, user_id, snapshot_obj)
+        with self.connection:
+            return snapshot.save_snapshot(
+                self.connection, user_id, snapshot_obj)
 
-    @safe_transaction
+    @_reraise_db_errors
     def get_results(self, user_id, snapshot_timestamp):
-        return results.get_results(
-            self.connection, user_id, snapshot_timestamp)
+        with self.connection:
+            return results.get_results(
+                self.connection, user_id, snapshot_timestamp)
 
-    @safe_transaction
+    @_reraise_db_errors
     def get_result(self, user_id, snapshot_timestamp, result_name):
-        return results.get_result(
-            self.connection, user_id, snapshot_timestamp, result_name)
+        with self.connection:
+            return results.get_result(
+                self.connection, user_id, snapshot_timestamp, result_name)
 
-    @safe_transaction
+    @_reraise_db_errors
     def save_result(self, user_id, snapshot_timestamp, result_name,
                     result_obj):
-        return results.save_result(
-            self.connection, user_id, snapshot_timestamp, result_name,
-            result_obj)
+        with self.connection:
+            return results.save_result(
+                self.connection, user_id, snapshot_timestamp, result_name,
+                result_obj)
