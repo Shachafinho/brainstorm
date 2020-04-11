@@ -1,3 +1,6 @@
+import io
+
+from brainstorm.database import DBError
 from brainstorm.database.objects import ColorImage
 from brainstorm.message_queue import Topic
 
@@ -6,14 +9,15 @@ _RESULT_NAME = 'color_image'
 
 
 def _mq_to_db(mq_color_image, blob_store):
-    data_path = blob_store.path(
-        subdir='color_image', suffix='.jpg')
-    mq_color_image.image.save(data_path)
+    bio = io.BytesIO()
+    mq_color_image.image.save(bio, format='jpeg')
+    data_token = blob_store.save(
+        bio.getvalue(), subdir='color_image', suffix='.jpg')
 
     return ColorImage(
         mq_color_image.width,
         mq_color_image.height,
-        str(data_path)
+        data_token,
     )
 
 
@@ -25,15 +29,14 @@ class ColorImageSaver:
         print(f'Saving MQ color image data: {data}')
         context.save('color_image.raw', data)
 
-        user_id = context.user_id
-        snapshot_timestamp = context.snapshot_timestamp
-
-        # Ensure the result doesn't already exist in the DB.
-        if database.get_result(user_id, snapshot_timestamp, _RESULT_NAME):
-            return
-
         # Save the result to the DB.
-        database.save_result(
-            user_id, snapshot_timestamp, _RESULT_NAME,
-            _mq_to_db(mq_color_image, database.blob_store),
-        )
+        db_color_image = _mq_to_db(mq_color_image, database.blob_store)
+        try:
+            database.save_result(
+                context.user_id, context.snapshot_timestamp, _RESULT_NAME,
+                db_color_image,
+            )
+        except DBError:
+            # Remove redundant file
+            database.blob_store.remove(db_color_image.data_token)
+            raise

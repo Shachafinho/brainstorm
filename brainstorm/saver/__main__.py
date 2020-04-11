@@ -21,8 +21,11 @@ def main():
 @click.option('-d', '--database', type=str, default=DEFAULT_DB_URL,
               show_default=True, help='Database URL to save the results to')
 def save(topic_name, raw_data_file, database):
-    with Saver(database) as saver:
-        saver.save(topic_name, raw_data_file.read())
+    try:
+        with Saver(database) as saver:
+            saver.save(topic_name, raw_data_file.read())
+    except Exception as e:
+        print(f'Caught exception: {e}')
 
 
 @main.command()

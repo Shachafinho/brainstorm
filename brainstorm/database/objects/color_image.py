@@ -5,4 +5,4 @@ import attr
 class ColorImage():
     width: int
     height: int
-    data_path: str
+    data_token: str

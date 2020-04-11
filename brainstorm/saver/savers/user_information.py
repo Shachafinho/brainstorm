@@ -17,9 +17,5 @@ class UserInformationSaver:
         print(f'Saving MQ user information data: {data}')
         context.save('user.raw', data)
 
-        # Ensure the user doesn't already exist in the DB.
-        if database.get_user(mq_user_information.user_id):
-            return
-
         # Save the user to the DB.
         database.save_user(_mq_to_db(mq_user_information))

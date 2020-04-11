@@ -32,7 +32,7 @@ _GET_RESULT = '''
 '''
 
 _ADD_IMAGE = '''
-    INSERT INTO {table}(user_id, snapshot_timestamp, width, height, data_path)
+    INSERT INTO {table}(user_id, snapshot_timestamp, width, height, data_token)
     VALUES(%s, %s, %s, %s, %s);
 '''
 _ADD_COLOR_IMAGE = _ADD_IMAGE.format(table='color_images')
@@ -103,13 +103,13 @@ def get_results(connection, user_id, snapshot_timestamp):
 
 def _save_color_image(cursor, user_id, snapshot_timestamp, color_image):
     args = (user_id, str(snapshot_timestamp),
-            color_image.width, color_image.height, color_image.data_path)
+            color_image.width, color_image.height, color_image.data_token)
     cursor.execute(_ADD_COLOR_IMAGE, args)
 
 
 def _save_depth_image(cursor, user_id, snapshot_timestamp, depth_image):
     args = (user_id, str(snapshot_timestamp),
-            depth_image.width, depth_image.height, depth_image.data_path)
+            depth_image.width, depth_image.height, depth_image.data_token)
     cursor.execute(_ADD_DEPTH_IMAGE, args)
 
 

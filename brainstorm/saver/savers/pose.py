@@ -31,15 +31,8 @@ class PoseSaver:
         print(f'Saving MQ pose data: {data}')
         context.save('pose.raw', data)
 
-        user_id = context.user_id
-        snapshot_timestamp = context.snapshot_timestamp
-
-        # Ensure the result doesn't already exist in the DB.
-        if database.get_result(user_id, snapshot_timestamp, _RESULT_NAME):
-            return
-
         # Save the result to the DB.
         database.save_result(
-            user_id, snapshot_timestamp, _RESULT_NAME,
+            context.user_id, context.snapshot_timestamp, _RESULT_NAME,
             _mq_to_db(mq_pose),
         )

@@ -20,7 +20,7 @@ def _reraise_db_errors_context():
     try:
         yield
     except (psycopg2.Error) as e:
-        raise DBError('DB operation failed') from e
+        raise DBError(f'DB operation failed: {e}') from e
 
 
 def _reraise_db_errors(func):

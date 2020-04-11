@@ -1,6 +1,16 @@
+import contextlib
 import functools
 
 from .saver import Saver
+from brainstorm.database import DBError
+
+
+def ignore_db_errors(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        with contextlib.suppress(DBError):
+            return func(*args, **kwargs)
+    return wrapper
 
 
 class Agent:
@@ -15,7 +25,7 @@ class Agent:
 
     def register(self, topic):
         bound_saver = functools.partial(self._saver.save, topic)
-        self._mq.subscribe(bound_saver, topic=topic)
+        self._mq.subscribe(ignore_db_errors(bound_saver), topic=topic)
         self._topics.append(topic)
 
     def run(self):

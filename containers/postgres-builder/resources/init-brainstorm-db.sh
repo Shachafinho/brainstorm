@@ -21,7 +21,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
 		snapshot_timestamp TIMESTAMPTZ NOT NULL,
 		width INTEGER NOT NULL,
 		height INTEGER NOT NULL,
-		data_path VARCHAR(255) NOT NULL,
+		data_token VARCHAR(255) NOT NULL,
 
 		PRIMARY KEY (user_id, snapshot_timestamp),
 		FOREIGN KEY (user_id, snapshot_timestamp) REFERENCES snapshots (user_id, timestamp)
@@ -32,7 +32,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
 		snapshot_timestamp TIMESTAMPTZ NOT NULL,
 		width INTEGER NOT NULL,
 		height INTEGER NOT NULL,
-		data_path VARCHAR(255) NOT NULL,
+		data_token VARCHAR(255) NOT NULL,
 
 		PRIMARY KEY (user_id, snapshot_timestamp),
 		FOREIGN KEY (user_id, snapshot_timestamp) REFERENCES snapshots (user_id, timestamp)
