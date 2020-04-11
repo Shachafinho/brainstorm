@@ -23,7 +23,7 @@ class UserInformation():
         }
 
     @classmethod
-    def deserialize(cls, serialized_user_information):
+    def deserialize(cls, context, serialized_user_information):
         user_dict = serialized_user_information[_TYPE_KEY]
         return cls(
             user_dict['user_id'],

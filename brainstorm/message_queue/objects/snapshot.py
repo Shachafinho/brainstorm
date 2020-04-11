@@ -1,3 +1,5 @@
+import io
+
 import arrow
 import attr
 
@@ -35,14 +37,14 @@ class Snapshot():
         return self.snapshot.pose
 
     def serialize(self, context):
-        data_path = context.path(f'snapshot.{_DEFAULT_FORMAT}')
-        with open(data_path, 'wb') as output_file:
-            _DEFAULT_FORMATTER.write_snapshot(self.snapshot, output_file)
-
-        return {_TYPE_KEY: str(data_path)}
+        bio = io.BytesIO()
+        _DEFAULT_FORMATTER.write_snapshot(self.snapshot, bio)
+        data_token = context.save(
+            bio.getvalue(), subdir='snapshot', suffix=f'.{_DEFAULT_FORMAT}')
+        return {_TYPE_KEY: data_token}
 
     @classmethod
-    def deserialize(cls, serialized_snapshot):
-        data_path = serialized_snapshot[_TYPE_KEY]
-        with open(data_path, 'rb') as input_file:
-            return cls(_DEFAULT_FORMATTER.read_snapshot(input_file))
+    def deserialize(cls, context, serialized_snapshot):
+        data_token = serialized_snapshot[_TYPE_KEY]
+        bio = io.BytesIO(context.load(data_token))
+        return cls(_DEFAULT_FORMATTER.read_snapshot(bio))

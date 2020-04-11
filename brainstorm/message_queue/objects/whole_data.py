@@ -21,8 +21,9 @@ class WholeData():
         }
 
     @classmethod
-    def deserialize(cls, serialized_whole_data):
+    def deserialize(cls, context, serialized_whole_data):
         user_information = UserInformation.deserialize(
-            serialized_whole_data[_TYPE_KEY])
-        snapshot = Snapshot.deserialize(serialized_whole_data[_TYPE_KEY])
+            context, serialized_whole_data[_TYPE_KEY])
+        snapshot = Snapshot.deserialize(
+            context, serialized_whole_data[_TYPE_KEY])
         return cls(user_information, snapshot)

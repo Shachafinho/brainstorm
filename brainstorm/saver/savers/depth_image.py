@@ -29,7 +29,7 @@ class DepthImageSaver:
     def __call__(self, database, data):
         context, mq_depth_image = Topic(self.topic).deserialize(data)
         print(f'Saving MQ depth image data: {data}')
-        context.save('depth_image.raw', data)
+        context.save(data, subdir='depth_image', suffix='.raw')
 
         # Save the result to the DB.
         db_depth_image = _mq_to_db(mq_depth_image, database.blob_store)

@@ -2,9 +2,10 @@ import pathlib
 
 import furl.furl as furl
 
-from .blob_store import BlobStore
+from brainstorm.utils.blob_store import BlobStore
 from brainstorm.utils.drivers import DirectoryFocusedConfig
 from brainstorm.utils.drivers import FocusedDriverManager
+from brainstorm.utils.paths import ROOT_DIR
 
 
 db_manager = FocusedDriverManager(DirectoryFocusedConfig(
@@ -14,12 +15,15 @@ db_manager = FocusedDriverManager(DirectoryFocusedConfig(
 ))
 
 
+DEFAULT_BLOBSTORE_DATA_DIR = ROOT_DIR.parent / 'blobstore'
+
+
 class Database:
     def __init__(self, url, blob_store=None):
         url = furl(url)
         driver_cls = db_manager.find_driver(url.scheme)
         self._driver = driver_cls(url)
-        self._blob_store = blob_store or BlobStore()
+        self._blob_store = blob_store or BlobStore(DEFAULT_BLOBSTORE_DATA_DIR)
 
     @property
     def blob_store(self):

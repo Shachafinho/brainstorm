@@ -48,7 +48,7 @@ class Topic:
     def deserialize(self, serialized_data):
         serialized_message = _deserialize_data(serialized_data)
         context = Context.deserialize(serialized_message.pop('context'))
-        obj = self._topic.deserialize(serialized_message)
+        obj = self._topic.deserialize(context, serialized_message)
         return context, obj
 
 

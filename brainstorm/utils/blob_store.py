@@ -1,16 +1,10 @@
 import pathlib
 import tempfile
 
-from brainstorm.utils.paths import ROOT_DIR
-
-
-DEFAULT_DATA_DIR = ROOT_DIR.parent / 'blobstore'
-
 
 class BlobStore:
-    def __init__(self, data_dir=None):
-        self.data_dir = pathlib.Path(str(data_dir)) if data_dir is not None \
-            else DEFAULT_DATA_DIR
+    def __init__(self, data_dir):
+        self.data_dir = pathlib.Path(str(data_dir))
 
     def _path_to_relative_path(self, path):
         return pathlib.Path(str(path)).relative_to(self.data_dir)

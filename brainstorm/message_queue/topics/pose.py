@@ -5,5 +5,5 @@ def serialize(context, pose):
     return pose.serialize(context)
 
 
-def deserialize(serialized_pose):
-    return Pose.deserialize(serialized_pose)
+def deserialize(context, serialized_pose):
+    return Pose.deserialize(context, serialized_pose)

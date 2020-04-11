@@ -5,5 +5,5 @@ def serialize(context, feelings):
     return feelings.serialize(context)
 
 
-def deserialize(serialized_feelings):
-    return Feelings.deserialize(serialized_feelings)
+def deserialize(context, serialized_feelings):
+    return Feelings.deserialize(context, serialized_feelings)

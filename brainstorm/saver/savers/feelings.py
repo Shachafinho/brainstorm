@@ -18,7 +18,7 @@ class FeelingsSaver:
     def __call__(self, database, data):
         context, mq_feelings = Topic(self.topic).deserialize(data)
         print(f'Saving MQ feelings data: {data}')
-        context.save('feelings.raw', data)
+        context.save(data, subdir='feelings', suffix='.raw')
 
         # Save the result to the DB.
         database.save_result(

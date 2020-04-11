@@ -15,5 +15,5 @@ class Feelings():
         return {_TYPE_KEY: attr.asdict(self)}
 
     @classmethod
-    def deserialize(cls, serialized_feelings):
+    def deserialize(cls, context, serialized_feelings):
         return cls(**serialized_feelings[_TYPE_KEY])

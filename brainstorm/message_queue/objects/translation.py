@@ -14,5 +14,5 @@ class Translation():
         return {_TYPE_KEY: attr.asdict(self)}
 
     @classmethod
-    def deserialize(cls, serialized_translation):
+    def deserialize(cls, context, serialized_translation):
         return cls(**serialized_translation[_TYPE_KEY])

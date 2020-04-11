@@ -27,7 +27,7 @@ class ColorImageSaver:
     def __call__(self, database, data):
         context, mq_color_image = Topic(self.topic).deserialize(data)
         print(f'Saving MQ color image data: {data}')
-        context.save('color_image.raw', data)
+        context.save(data, subdir='color_image', suffix='.raw')
 
         # Save the result to the DB.
         db_color_image = _mq_to_db(mq_color_image, database.blob_store)

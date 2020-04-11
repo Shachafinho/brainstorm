@@ -21,7 +21,7 @@ class Pose():
         }
 
     @classmethod
-    def deserialize(cls, serialized_pose):
+    def deserialize(cls, context, serialized_pose):
         rotation = Rotation.deserialize(serialized_pose[_TYPE_KEY])
         translation = Translation.deserialize(serialized_pose[_TYPE_KEY])
         return cls(translation, rotation)

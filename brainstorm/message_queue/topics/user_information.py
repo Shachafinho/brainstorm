@@ -5,5 +5,5 @@ def serialize(context, user_information):
     return user_information.serialize(context)
 
 
-def deserialize(serialized_user_information):
-    return UserInformation.deserialize(serialized_user_information)
+def deserialize(context, serialized_user_information):
+    return UserInformation.deserialize(context, serialized_user_information)

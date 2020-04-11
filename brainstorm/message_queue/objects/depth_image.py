@@ -1,3 +1,5 @@
+import io
+
 import attr
 import numpy as np
 
@@ -18,11 +20,14 @@ class DepthImage():
         return self.data.shape[0]
 
     def serialize(self, context):
-        data_path = context.path('depth_image.npy')
-        np.save(data_path, self.data)
-        return {_TYPE_KEY: str(data_path)}
+        bio = io.BytesIO()
+        np.save(bio, self.data)
+        data_token = context.save(
+            bio.getvalue(), subdir='depth_image', suffix='.npy')
+        return {_TYPE_KEY: data_token}
 
     @classmethod
-    def deserialize(cls, serialized_depth_image):
-        data_path = serialized_depth_image[_TYPE_KEY]
-        return cls(np.load(data_path))
+    def deserialize(cls, context, serialized_depth_image):
+        data_token = serialized_depth_image[_TYPE_KEY]
+        bio = io.BytesIO(context.load(data_token))
+        return cls(np.load(bio))

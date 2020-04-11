@@ -15,7 +15,7 @@ class UserInformationSaver:
     def __call__(self, database, data):
         context, mq_user_information = Topic(self.topic).deserialize(data)
         print(f'Saving MQ user information data: {data}')
-        context.save('user.raw', data)
+        context.save(data, subdir='user_information', suffix='.raw')
 
         # Save the user to the DB.
         database.save_user(_mq_to_db(mq_user_information))

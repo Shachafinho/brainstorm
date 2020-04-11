@@ -2,6 +2,7 @@ import pathlib
 
 import arrow
 
+from brainstorm.utils.blob_store import BlobStore
 from brainstorm.utils.paths import ROOT_DIR
 
 
@@ -13,22 +14,28 @@ class Context:
     def __init__(self, user_id=None, snapshot_timestamp=None, data_dir=None):
         self.user_id = user_id
         self.snapshot_timestamp = snapshot_timestamp
-        self.data_dir = pathlib.Path(str(data_dir)) if data_dir is not None \
+        self._data_dir = pathlib.Path(str(data_dir)) if data_dir \
             else DEFAULT_DATA_DIR
+        self._blob_store = BlobStore(self.data_dir)
 
-    def path(self, filename, *, create_dirs=True):
+    @property
+    def data_dir(self):
+        return self._data_dir
+
+    def load(self, token):
+        return self._blob_store.load(token)
+
+    def save(self, data, suffix=None, prefix=None, subdir=None):
         user_id_str = str(self.user_id) if self.user_id is not None else ''
         timestamp_str = self.snapshot_timestamp.format(TIMESTAMP_FORMAT) \
             if self.snapshot_timestamp is not None else ''
-        file_path = self.data_dir / user_id_str / timestamp_str / filename
+        subdir = subdir or ''
 
-        # Create directories along the path (as needed).
-        if create_dirs:
-            file_path.parent.mkdir(mode=0o775, parents=True, exist_ok=True)
-        return file_path
+        full_subdir = pathlib.Path(user_id_str, timestamp_str, subdir)
+        return self._blob_store.save(data, suffix, prefix, full_subdir)
 
-    def save(self, filename, data):
-        self.path(filename).write_bytes(data)
+    def remove(self, token):
+        return self._blob_store.remove(token)
 
     def serialize(self):
         context_dict =  {

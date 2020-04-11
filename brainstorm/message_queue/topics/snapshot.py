@@ -5,5 +5,5 @@ def serialize(context, snapshot):
     return snapshot.serialize(context)
 
 
-def deserialize(serialized_snapshot):
-    return Snapshot.deserialize(serialized_snapshot)
+def deserialize(context, serialized_snapshot):
+    return Snapshot.deserialize(context, serialized_snapshot)

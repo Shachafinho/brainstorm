@@ -29,7 +29,7 @@ class PoseSaver:
     def __call__(self, database, data):
         context, mq_pose = Topic(self.topic).deserialize(data)
         print(f'Saving MQ pose data: {data}')
-        context.save('pose.raw', data)
+        context.save(data, subdir='pose', suffix='.raw')
 
         # Save the result to the DB.
         database.save_result(

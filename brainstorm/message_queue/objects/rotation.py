@@ -15,5 +15,5 @@ class Rotation():
         return {_TYPE_KEY: attr.asdict(self)}
 
     @classmethod
-    def deserialize(cls, serialized_rotation):
+    def deserialize(cls, context, serialized_rotation):
         return cls(**serialized_rotation[_TYPE_KEY])

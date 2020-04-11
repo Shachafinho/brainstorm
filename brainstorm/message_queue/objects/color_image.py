@@ -1,3 +1,5 @@
+import io
+
 import attr
 import PIL.Image as Image
 
@@ -18,11 +20,14 @@ class ColorImage():
         return self.image.height
 
     def serialize(self, context):
-        image_path = context.path('color_image.jpg')
-        self.image.save(image_path)
-        return {_TYPE_KEY: str(image_path)}
+        bio = io.BytesIO()
+        self.image.save(bio, format='jpeg')
+        data_token = context.save(
+            bio.getvalue(), subdir='color_image', suffix='.jpg')
+        return {_TYPE_KEY: data_token}
 
     @classmethod
-    def deserialize(cls, serialized_color_image):
-        image_path = serialized_color_image[_TYPE_KEY]
-        return cls(Image.open(image_path))
+    def deserialize(cls, context, serialized_color_image):
+        data_token = serialized_color_image[_TYPE_KEY]
+        bio = io.BytesIO(context.load(data_token))
+        return cls(Image.open(bio))
