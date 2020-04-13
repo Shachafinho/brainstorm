@@ -1,0 +1,3 @@
+# Ignore everything
+**/*
+!containers/postgres-builder/resources

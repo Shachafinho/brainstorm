@@ -2,6 +2,9 @@ import construct
 import socket
 
 
+_DEFAULT_CHUNK_SIZE = 2048
+
+
 class Connection:
     Message = construct.PrefixedArray(
         construct.Int32ul, construct.Byte).compile()
@@ -19,14 +22,25 @@ class Connection:
 
         return f'<{class_name} from {src_addr_str} to {dst_addr_str}>'
 
-    def send(self, data):
-        self.socket.sendall(data)
+    def send(self, data, chunk_max_size=None):
+        chunk_max_size = chunk_max_size or _DEFAULT_CHUNK_SIZE
 
-    def receive(self, size):
+        total_bytes_sent = 0
+        while total_bytes_sent < len(data):
+            bytes_to_send = min(chunk_max_size, len(data) - total_bytes_sent)
+            bytes_sent = self.socket.send(
+                data[total_bytes_sent:total_bytes_sent + bytes_to_send])
+            total_bytes_sent += bytes_sent
+        return total_bytes_sent
+
+    def receive(self, size, chunk_max_size=None):
+        chunk_max_size = chunk_max_size or _DEFAULT_CHUNK_SIZE
+
         chunks = []
         total_received_bytes = 0
         while total_received_bytes < size:
-            chunk = self.socket.recv(size - total_received_bytes)
+            chunk = self.socket.recv(
+                min(size - total_received_bytes, chunk_max_size))
             if not chunk:
                 raise ConnectionAbortedError()
             chunks.append(chunk)

@@ -4,5 +4,5 @@
 docs/build/
 
 # Ignore data directories
-blobstore/
+db_data/
 mq_data/

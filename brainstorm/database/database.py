@@ -15,7 +15,7 @@ db_manager = FocusedDriverManager(DirectoryFocusedConfig(
 ))
 
 
-DEFAULT_BLOBSTORE_DATA_DIR = ROOT_DIR.parent / 'blobstore'
+DEFAULT_DATA_DIR = ROOT_DIR.parent / 'db_data'
 
 
 class Database:
@@ -23,7 +23,7 @@ class Database:
         url = furl(url)
         driver_cls = db_manager.find_driver(url.scheme)
         self._driver = driver_cls(url)
-        self._blob_store = blob_store or BlobStore(DEFAULT_BLOBSTORE_DATA_DIR)
+        self._blob_store = blob_store or BlobStore(DEFAULT_DATA_DIR)
 
     @property
     def blob_store(self):
