@@ -1,0 +1,182 @@
+openapi: 3.0.0
+info:
+  description: This is the swagger file that goes with our API server code
+  version: 1.0.0
+  title: Swagger REST Article
+
+
+paths:
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get all users.
+      description: Read the list of users
+      operationId: brainstorm.api.controllers.get_users
+      responses:
+        "200":
+          description: Successful get users operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MinimalUser"
+
+  /users/{user_id}:
+    get:
+      tags:
+        - Users
+      summary: Gets a user by ID.
+      description: Read a specific user
+      operationId: brainstorm.api.controllers.get_user
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      responses:
+        "200":
+          description: Successful get specific user operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /users/{user_id}/snapshots:
+    get:
+      tags:
+        - Snapshots
+      summary: Gets all user's snapshots.
+      description: Read the list of user's snapshots
+      operationId: brainstorm.api.controllers.get_snapshots
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      responses:
+        "200":
+          description: Successful get user's snapshots operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MinimalSnapshot"
+
+  /users/{user_id}/snapshots/{snapshot_timestamp}:
+    get:
+      tags:
+        - Snapshots
+      summary: Gets a user's snapshot by timestamp.
+      description: Read a specific user's snapshot
+      operationId: brainstorm.api.controllers.get_snapshot
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+        - $ref: "#/components/parameters/SnapshotTimestamp"
+      responses:
+        "200":
+          description: Successful get user's specific snapshot operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Snapshot"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+
+servers:
+  - url: /
+
+
+components:
+  schemas:
+    UserId:
+      description: User ID
+      type: integer
+      format: int64
+      minimum: 0
+
+    MinimalUser:
+      description: A minimal representation of a user
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UserId"
+        name:
+          type: string
+      required:
+        - name
+
+    User:
+      description: A full representation of a user
+      allOf:
+        - $ref: "#/components/schemas/MinimalUser"
+        - type: object
+          properties:
+            birthday:
+              type: string
+              format: date-time
+            gender:
+              type: string
+          required:
+            - birthday
+            - gender
+
+    SnapshotTimestamp:
+      description: Snapshot timestamp (used as ID)
+      type: string
+      format: date-time
+
+    MinimalSnapshot:
+      description: A minimal representation of a snapshot
+      type: object
+      properties:
+        timestamp:
+          $ref: "#/components/schemas/SnapshotTimestamp"
+
+    Snapshot:
+      description: A full representation of a snapshot
+      allOf:
+        - $ref: "#/components/schemas/MinimalSnapshot"
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                type: string
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+
+  parameters:
+    UserId:
+      name: user_id
+      in: path
+      description: User ID
+      required: true
+      schema:
+        $ref: "#/components/schemas/UserId"
+
+    SnapshotTimestamp:
+      name: snapshot_timestamp
+      in: path
+      description: Snapshot's timestamp (used as ID)
+      required: true
+      schema:
+        $ref: "#/components/schemas/SnapshotTimestamp"
+
+
+  responses:
+    NotFound:
+      description: The specified resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"

@@ -2,7 +2,7 @@ import attr
 
 
 @attr.s(auto_attribs=True, slots=True)
-class ColorImage():
+class ColorImage:
     width: int
     height: int
     data_token: str

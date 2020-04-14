@@ -5,7 +5,7 @@ from .translation import Translation
 
 
 @attr.s(auto_attribs=True, slots=True)
-class Pose():
+class Pose:
     translation: Translation
     rotation: Rotation
 
