@@ -5,10 +5,11 @@ import furl.furl as furl
 
 from .errors import create_error_response
 
-from brainstorm.api.objects import Error
+from brainstorm.api.objects import BadRequestError
 from brainstorm.api.objects import ColorImage
 from brainstorm.api.objects import DepthImage
 from brainstorm.api.objects import Feelings
+from brainstorm.api.objects import NotFoundError
 from brainstorm.api.objects import Pose
 from brainstorm.api.objects import Rotation
 from brainstorm.api.objects import Translation
@@ -93,11 +94,11 @@ def get_result(database, user_id, snapshot_timestamp, result_name):
             user_id, snapshot_timestamp, result_name)
     except Exception:
         return create_error_response(
-            Error(400, f'Result {result_name} is invalid'))
+            BadRequestError(f'Result {result_name} is invalid'))
 
     if db_result is None:
         return create_error_response(
-            Error(404, f'Result {result_name} was not found'))
+            NotFoundError(f'Result {result_name} was not found'))
 
     result = _db_result_to_result(db_result)
     serialized_result = result.serialize()
@@ -109,13 +110,13 @@ def get_result_data(database, user_id, snapshot_timestamp, result_name):
     data_token = getattr(db_result, _DATA_TOKEN_FIELD, None)
     if data_token is None:
         return create_error_response(
-            Error(400, f'Result has no data field'))
+            BadRequestError(f'Result has no data field'))
 
     data = None
     with contextlib.suppress(Exception):
         data = database.blob_store.load(data_token)
     if data is None:
         return create_error_response(
-            Error(404, f'Result data was not found'))
+            NotFoundError(f'Result data was not found'))
 
     return flask.Response(data, content_type='image/*')

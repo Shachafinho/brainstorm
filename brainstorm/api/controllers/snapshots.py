@@ -1,6 +1,6 @@
 from .errors import create_error_response
-from brainstorm.api.objects import Error
 from brainstorm.api.objects import MinimalSnapshot
+from brainstorm.api.objects import NotFoundError
 from brainstorm.api.objects import Snapshot
 
 
@@ -23,7 +23,7 @@ def get_snapshot(database, user_id, snapshot_timestamp):
     db_snapshot = database.get_snapshot(user_id, snapshot_timestamp)
     if db_snapshot is None:
         return create_error_response(
-            Error(404, f'Snapshot {snapshot_timestamp} was not found'))
+            NotFoundError(f'Snapshot {snapshot_timestamp} was not found'))
 
     results = database.get_results(user_id, snapshot_timestamp)
     return _create_snapshot(db_snapshot, results).serialize()
