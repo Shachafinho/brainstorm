@@ -1,5 +1,3 @@
-import sys
-
 import click
 
 from .agent import Agent
@@ -17,8 +15,7 @@ def main():
 @click.argument('raw-data-file', type=click.File('rb'))
 def parse(parser_name, raw_data_file):
     result = _parse(parser_name, raw_data_file.read())
-    sys.stdout.write(result.decode())
-    sys.stdout.flush()
+    print(result.decode(), end='')
 
 
 @main.command()

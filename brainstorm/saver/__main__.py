@@ -1,5 +1,3 @@
-import sys
-
 import click
 
 from .agent import Agent
