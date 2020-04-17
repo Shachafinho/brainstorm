@@ -8,4 +8,3 @@ from .translation import Translation
 class Pose:
     translation: Translation
     rotation: Rotation
-

@@ -1,3 +1,4 @@
+from .errors import create_error_response
 from brainstorm.api.objects import Error
 from brainstorm.api.objects import MinimalUser
 from brainstorm.api.objects import User
@@ -22,7 +23,7 @@ def get_users(database):
 def get_user(database, user_id):
     db_user = database.get_user(user_id)
     if db_user is None:
-        error = Error(404, f'User ID {user_id} was not found')
-        return error.serialize(), 404
+        return create_error_response(
+            Error(404, f'User ID {user_id} was not found'))
 
     return _db_user_to_user(db_user).serialize()

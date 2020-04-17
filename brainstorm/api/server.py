@@ -5,16 +5,16 @@ from .resolver import DatabaseAwareResolver
 from brainstorm.database import Database
 
 
-DEFAULT_SPECIFICATION_DIR = 'spec'
-SWAGGER_FILE = 'swagger.yaml'
+_DEFAULT_SPECIFICATION_DIR = 'spec'
+_SWAGGER_FILE = 'swagger.yaml'
 
 
 def create_app(database, specification_dir=None):
-    specification_dir = specification_dir or DEFAULT_SPECIFICATION_DIR
+    specification_dir = specification_dir or _DEFAULT_SPECIFICATION_DIR
     app = connexion.App(__name__, specification_dir=specification_dir)
 
     resolver = DatabaseAwareResolver(database)
-    app.add_api(SWAGGER_FILE, resolver=resolver, validate_responses=True)
+    app.add_api(_SWAGGER_FILE, resolver=resolver, validate_responses=True)
 
     return app
 

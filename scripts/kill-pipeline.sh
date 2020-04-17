@@ -11,7 +11,7 @@ declare -a VOLUMES=( \
 declare -a CONTAINERS=( \
     "rabbitmq" \
     "postgres" \
-    "server" \
+    "api_server" \
     "saver" \
     "parse_user_information" \
     "parse_snapshot" \
@@ -19,6 +19,7 @@ declare -a CONTAINERS=( \
     "parse_depth_image" \
     "parse_feelings" \
     "parse_pose" \
+    "server" \
 )
 
 docker stop ${CONTAINERS[@]}

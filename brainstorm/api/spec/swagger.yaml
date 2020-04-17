@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  description: This is the swagger file that goes with our API server code
+  description: This is the swagger file that goes with the API server code
   version: 1.0.0
   title: Swagger REST Article
 
@@ -81,6 +81,53 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /users/{user_id}/snapshots/{snapshot_timestamp}/{result_name}:
+    get:
+      tags:
+        - Results
+      summary: Gets a user's snapshot's result by name.
+      description: Read a specific user's snapshot's result
+      operationId: brainstorm.api.controllers.get_result
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+        - $ref: "#/components/parameters/SnapshotTimestamp"
+        - $ref: "#/components/parameters/ResultName"
+      responses:
+        "200":
+          description: Successful get user's snapshot's specific result operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Result"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /users/{user_id}/snapshots/{snapshot_timestamp}/{result_name}/data:
+    get:
+      tags:
+        - Results
+      summary: Gets the data of a user's snapshot's result.
+      description: Read the data of a specific user's snapshot's result
+      operationId: brainstorm.api.controllers.get_result_data
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+        - $ref: "#/components/parameters/SnapshotTimestamp"
+        - $ref: "#/components/parameters/ResultName"
+      responses:
+        "200":
+          description: OK
+          content:
+            image/jpeg:
+              schema:
+                $ref: "#/components/schemas/ResultImageData"
+          # $ref: "#/components/responses/ImageData"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
 
 servers:
   - url: /
@@ -143,6 +190,113 @@ components:
               items:
                 type: string
 
+    ResultName:
+      description: Result's name
+      type: string
+
+    Result:
+      description: Result
+      anyOf:
+        - $ref: "#/components/schemas/ResultColorImage"
+        - $ref: "#/components/schemas/ResultDepthImage"
+        - $ref: "#/components/schemas/ResultFeelings"
+        - $ref: "#/components/schemas/ResultPose"
+
+    ResultImage:
+      type: object
+      properties:
+        width:
+          type: integer
+          format: int32
+        height:
+          type: integer
+          format: int32
+      required:
+        - width
+        - height
+
+    ResultColorImage:
+      $ref: "#/components/schemas/ResultImage"
+
+    ResultDepthImage:
+      $ref: "#/components/schemas/ResultImage"
+
+    ResultImageData:
+      type: string
+      format: binary
+
+    ResultFeeling:
+      description: >
+        A measurement of a specific feeling, on a scale of 0 to 1.
+        0 means *not at all*, while 1 means *very*.
+      type: number
+      format: float
+      minimum: 0
+      maximum: 1
+
+    ResultFeelings:
+      type: object
+      properties:
+        hunger:
+          $ref: "#/components/schemas/ResultFeeling"
+        thirst:
+          $ref: "#/components/schemas/ResultFeeling"
+        exhaustion:
+          $ref: "#/components/schemas/ResultFeeling"
+        happiness:
+          $ref: "#/components/schemas/ResultFeeling"
+      required:
+        - hunger
+        - thirst
+        - exhaustion
+        - happiness
+
+    ResultDoubleNumber:
+      type: number
+      format: double
+
+    ResultRotation:
+      type: object
+      properties:
+        x:
+          $ref: "#/components/schemas/ResultDoubleNumber"
+        y:
+          $ref: "#/components/schemas/ResultDoubleNumber"
+        z:
+          $ref: "#/components/schemas/ResultDoubleNumber"
+        w:
+          $ref: "#/components/schemas/ResultDoubleNumber"
+      required:
+        - x
+        - y
+        - z
+        - w
+
+    ResultTranslation:
+      type: object
+      properties:
+        x:
+          $ref: "#/components/schemas/ResultDoubleNumber"
+        y:
+          $ref: "#/components/schemas/ResultDoubleNumber"
+        z:
+          $ref: "#/components/schemas/ResultDoubleNumber"
+      required:
+        - x
+        - y
+        - z
+
+    ResultPose:
+      type: object
+      properties:
+        translation:
+          $ref: "#/components/schemas/ResultTranslation"
+        rotation:
+          $ref: "#/components/schemas/ResultRotation"
+      required:
+        - translation
+        - rotation
+
     Error:
       type: object
       properties:
@@ -172,8 +326,30 @@ components:
       schema:
         $ref: "#/components/schemas/SnapshotTimestamp"
 
+    ResultName:
+      name: result_name
+      in: path
+      description: Result's name
+      required: true
+      schema:
+        $ref: "#/components/schemas/ResultName"
+
 
   responses:
+    ImageData:
+      description: Image data as an image.
+      content:
+        image/jpeg:
+          schema:
+            $ref: "#/components/schemas/ResultImageData"
+
+    BadRequest:
+      description: The request was invalid.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
     NotFound:
       description: The specified resource was not found.
       content:
