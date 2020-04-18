@@ -70,25 +70,25 @@ def get_snapshots(host, port, user_id):
 @main.command()
 @_default_api_options
 @click.argument('user-id')
-@click.argument('snapshot-timestamp')
-def get_snapshot(host, port, user_id, snapshot_timestamp):
+@click.argument('snapshot-id')
+def get_snapshot(host, port, user_id, snapshot_id):
     with _catch_errors_context():
         data = _request_data(str(urls.get_snapshot_url(
-            host, port, user_id, snapshot_timestamp)))
+            host, port, user_id, snapshot_id)))
         print(data, end='')
 
 
 @main.command()
 @_default_api_options
 @click.argument('user-id')
-@click.argument('snapshot-timestamp')
+@click.argument('snapshot-id')
 @click.argument('result-name')
 @click.option('-s', '--save', 'out_file', type=click.File('w'),
               help='A path to which the result data will be saved')
-def get_result(host, port, user_id, snapshot_timestamp, result_name, out_file):
+def get_result(host, port, user_id, snapshot_id, result_name, out_file):
     with _catch_errors_context():
         data = _request_data(str(urls.get_result_url(
-            host, port, user_id, snapshot_timestamp, result_name)))
+            host, port, user_id, snapshot_id, result_name)))
         if out_file:
             out_file.write(data)
         else:

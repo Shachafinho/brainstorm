@@ -24,11 +24,11 @@ class Error:
         return converter.structure(serialized_data, cls)
 
 
-@attr.s
+@attr.s(auto_attribs=True, slots=True)
 class BadRequestError(Error):
     code: int = attr.ib(default=http.HTTPStatus.BAD_REQUEST.value, kw_only=True)
 
 
-@attr.s
+@attr.s(auto_attribs=True, slots=True)
 class NotFoundError(Error):
     code: int = attr.ib(default=http.HTTPStatus.NOT_FOUND.value, kw_only=True)

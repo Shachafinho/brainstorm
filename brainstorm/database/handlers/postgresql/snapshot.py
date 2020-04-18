@@ -44,7 +44,6 @@ def get_snapshot(connection, user_id, snapshot_timestamp):
 
 
 def save_snapshot(connection, user_id, snapshot):
-    snapshot_id = None
     with connection.cursor() as cur:
         cur.execute(_ADD_SNAPSHOT, (user_id, str(snapshot.timestamp)))
         connection.commit()

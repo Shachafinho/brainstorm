@@ -17,10 +17,10 @@ def get_snapshots_url(host, port, user_id):
     return get_user_url(host, port, user_id) / 'snapshots'
 
 
-def get_snapshot_url(host, port, user_id, snapshot_timestamp):
-    return get_snapshots_url(host, port, user_id) / str(snapshot_timestamp)
+def get_snapshot_url(host, port, user_id, snapshot_id):
+    return get_snapshots_url(host, port, user_id) / str(snapshot_id)
 
 
-def get_result_url(host, port, user_id, snapshot_timestamp, result_name):
-    return get_snapshot_url(host, port, user_id, snapshot_timestamp) / \
+def get_result_url(host, port, user_id, snapshot_id, result_name):
+    return get_snapshot_url(host, port, user_id, snapshot_id) / \
         str(result_name)

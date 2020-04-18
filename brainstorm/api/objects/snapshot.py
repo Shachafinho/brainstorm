@@ -8,6 +8,7 @@ from brainstorm.utils.converter import converter
 
 @attr.s(auto_attribs=True, slots=True)
 class MinimalSnapshot:
+    snapshot_id: int
     timestamp: arrow.Arrow
 
     def serialize(self):

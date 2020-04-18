@@ -4,6 +4,7 @@ import flask
 import furl.furl as furl
 
 from .errors import create_error_response
+from .snapshots import get_snapshot_timestamp_by_id
 
 from brainstorm.api.objects import BadRequestError
 from brainstorm.api.objects import ColorImage
@@ -88,24 +89,30 @@ def _db_result_to_result(db_result):
         raise ValueError(f'Unknown result: {db_result!r}')
 
 
-def get_result(database, user_id, snapshot_timestamp, result_name):
+def get_result(database, user_id, snapshot_id, result_name):
+    snapshot_timestamp = get_snapshot_timestamp_by_id(
+        database, user_id, snapshot_id)
+
     try:
         db_result = database.get_result(
             user_id, snapshot_timestamp, result_name)
     except Exception:
         return create_error_response(
-            BadRequestError(f'Result {result_name} is invalid'))
+            BadRequestError(f'Result {result_name!r} is invalid'))
 
     if db_result is None:
         return create_error_response(
-            NotFoundError(f'Result {result_name} was not found'))
+            NotFoundError(f'Result {result_name!r} was not found'))
 
     result = _db_result_to_result(db_result)
     serialized_result = result.serialize()
     return serialized_result
 
 
-def get_result_data(database, user_id, snapshot_timestamp, result_name):
+def get_result_data(database, user_id, snapshot_id, result_name):
+    snapshot_timestamp = get_snapshot_timestamp_by_id(
+        database, user_id, snapshot_id)
+
     db_result = database.get_result(user_id, snapshot_timestamp, result_name)
     data_token = getattr(db_result, _DATA_TOKEN_FIELD, None)
     if data_token is None:

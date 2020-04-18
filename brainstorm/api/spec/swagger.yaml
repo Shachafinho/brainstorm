@@ -61,16 +61,16 @@ paths:
                 items:
                   $ref: "#/components/schemas/MinimalSnapshot"
 
-  /users/{user_id}/snapshots/{snapshot_timestamp}:
+  /users/{user_id}/snapshots/{snapshot_id}:
     get:
       tags:
         - Snapshots
-      summary: Gets a user's snapshot by timestamp.
+      summary: Gets a user's snapshot by ID.
       description: Read a specific user's snapshot
       operationId: brainstorm.api.controllers.get_snapshot
       parameters:
         - $ref: "#/components/parameters/UserId"
-        - $ref: "#/components/parameters/SnapshotTimestamp"
+        - $ref: "#/components/parameters/SnapshotId"
       responses:
         "200":
           description: Successful get user's specific snapshot operation
@@ -81,7 +81,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
-  /users/{user_id}/snapshots/{snapshot_timestamp}/{result_name}:
+  /users/{user_id}/snapshots/{snapshot_id}/{result_name}:
     get:
       tags:
         - Results
@@ -90,7 +90,7 @@ paths:
       operationId: brainstorm.api.controllers.get_result
       parameters:
         - $ref: "#/components/parameters/UserId"
-        - $ref: "#/components/parameters/SnapshotTimestamp"
+        - $ref: "#/components/parameters/SnapshotId"
         - $ref: "#/components/parameters/ResultName"
       responses:
         "200":
@@ -104,7 +104,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
-  /users/{user_id}/snapshots/{snapshot_timestamp}/{result_name}/data:
+  /users/{user_id}/snapshots/{snapshot_id}/{result_name}/data:
     get:
       tags:
         - Results
@@ -113,16 +113,11 @@ paths:
       operationId: brainstorm.api.controllers.get_result_data
       parameters:
         - $ref: "#/components/parameters/UserId"
-        - $ref: "#/components/parameters/SnapshotTimestamp"
+        - $ref: "#/components/parameters/SnapshotId"
         - $ref: "#/components/parameters/ResultName"
       responses:
         "200":
-          description: OK
-          content:
-            image/jpeg:
-              schema:
-                $ref: "#/components/schemas/ResultImageData"
-          # $ref: "#/components/responses/ImageData"
+          $ref: "#/components/responses/ImageData"
         "400":
           $ref: "#/components/responses/BadRequest"
         "404":
@@ -135,21 +130,26 @@ servers:
 
 components:
   schemas:
-    UserId:
-      description: User ID
+    GenericId:
+      description: Generic identifier
       type: integer
       format: int64
-      minimum: 0
+      minimum: 1
+
+    UserId:
+      description: User ID
+      $ref: "#/components/schemas/GenericId"
 
     MinimalUser:
       description: A minimal representation of a user
       type: object
       properties:
-        id:
+        user_id:
           $ref: "#/components/schemas/UserId"
         name:
           type: string
       required:
+        - user_id
         - name
 
     User:
@@ -167,17 +167,22 @@ components:
             - birthday
             - gender
 
-    SnapshotTimestamp:
-      description: Snapshot timestamp (used as ID)
-      type: string
-      format: date-time
+    SnapshotId:
+      description: Snapshot ID
+      $ref: "#/components/schemas/GenericId"
 
     MinimalSnapshot:
       description: A minimal representation of a snapshot
       type: object
       properties:
+        snapshot_id:
+          $ref: "#/components/schemas/SnapshotId"
         timestamp:
-          $ref: "#/components/schemas/SnapshotTimestamp"
+          type: string
+          format: date-time
+      required:
+        - snapshot_id
+        - timestamp
 
     Snapshot:
       description: A full representation of a snapshot
@@ -188,7 +193,7 @@ components:
             results:
               type: array
               items:
-                type: string
+                $ref: "#/components/schemas/ResultName"
 
     ResultName:
       description: Result's name
@@ -211,14 +216,20 @@ components:
         height:
           type: integer
           format: int32
+        data:
+          description: URL of the actual image data
+          type: string
       required:
         - width
         - height
+        - data
 
     ResultColorImage:
+      description: A representation of a color image
       $ref: "#/components/schemas/ResultImage"
 
     ResultDepthImage:
+      description: A representation of a depth image
       $ref: "#/components/schemas/ResultImage"
 
     ResultImageData:
@@ -318,13 +329,13 @@ components:
       schema:
         $ref: "#/components/schemas/UserId"
 
-    SnapshotTimestamp:
-      name: snapshot_timestamp
+    SnapshotId:
+      name: snapshot_id
       in: path
-      description: Snapshot's timestamp (used as ID)
+      description: Snapshot's ID
       required: true
       schema:
-        $ref: "#/components/schemas/SnapshotTimestamp"
+        $ref: "#/components/schemas/SnapshotId"
 
     ResultName:
       name: result_name
