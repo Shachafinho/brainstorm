@@ -88,7 +88,7 @@ if ! is_up container api_server; then
         --network $NETWORK_NAME \
         --mount source=$DB_VOLUME_NAME,target=$DB_VOLUME_TARGET \
         brainstorm-builder \
-        python -m brainstorm.api run-server --host "0.0.0.0" --database "$DB_URL"
+        python -m brainstorm.api run-server --host "0.0.0.0" --port $API_SERVER_PORT --database "$DB_URL"
 fi
 if ! is_up container saver; then
     echo "Running docker container: saver"
@@ -119,5 +119,5 @@ if ! is_up container server; then
         --network $NETWORK_NAME \
         --mount source=$MQ_VOLUME_NAME,target=$MQ_VOLUME_TARGET \
         brainstorm-builder \
-        python -m brainstorm.server run-server --host "0.0.0.0" "$MQ_URL"
+        python -m brainstorm.server run-server --host "0.0.0.0" --port $SERVER_PORT "$MQ_URL"
 fi
