@@ -15,6 +15,7 @@ coverage==5.0
 cycler==0.10.0
 docutils==0.15.2
 Flask==1.1.1
+Flask-Cors==3.0.8
 furl==2.1.0
 idna==2.8
 imagesize==1.1.0

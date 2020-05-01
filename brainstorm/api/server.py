@@ -1,5 +1,6 @@
 import connexion
 import flask
+import flask_cors
 
 from .resolver import DatabaseAwareResolver
 from brainstorm.database import Database
@@ -15,6 +16,9 @@ def create_app(database, specification_dir=None):
 
     resolver = DatabaseAwareResolver(database)
     app.add_api(_SWAGGER_FILE, resolver=resolver, validate_responses=True)
+
+    # Add CORS support
+    flask_cors.CORS(app.app)
 
     return app
 
