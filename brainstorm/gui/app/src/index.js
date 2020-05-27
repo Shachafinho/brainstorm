@@ -6,9 +6,10 @@ import * as serviceWorker from './serviceWorker';
 
 const API_URL = (window.API_URL === '__API_URL__') ? 'http://127.0.0.1:5000' : window.API_URL
 ReactDOM.render(
-  <React.StrictMode>
-    <App apiUrl={API_URL} />
-  </React.StrictMode>,
+  // <React.StrictMode>
+  //   <App apiUrl={API_URL} />
+  // </React.StrictMode>,
+  <App apiUrl={API_URL} />,
   document.getElementById('root')
 );
 

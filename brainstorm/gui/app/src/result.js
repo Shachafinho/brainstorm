@@ -3,6 +3,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { Collection, CollectionItem } from './collection.js';
 import { DataLoader } from './data.js';
+import { ImageDialog } from './image.js';
 import { useStyles } from './style.js';
 import { getResultUrl } from './urls.js';
 
@@ -10,17 +11,13 @@ import { getResultUrl } from './urls.js';
 
 function ImageResult(props) {
   return (
-    <div className="result-base-image">
-      <Typography>
-        Width: {props.width}
-      </Typography>
-      <Typography>
-        Height: {props.height}
-      </Typography>
-      <Typography>
-        Data: {props.data}
-      </Typography>
-    </div>
+    <>
+      <ImageDialog
+        width={props.width}
+        height={props.height}
+        data={props.data}
+      />
+    </>
   )
 }
 
