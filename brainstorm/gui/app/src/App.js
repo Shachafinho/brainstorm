@@ -1,7 +1,8 @@
 import React from 'react';
 // import logo from './logo.svg';
 // import './App.css';
-import UserCollection from './user.js';
+// import UserCollection from './user.js';
+import Users from './user.js';
 
 // === Components ===
 
@@ -9,7 +10,8 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <UserCollection apiUrl={this.props.apiUrl} />
+        {/* <UserCollection apiUrl={this.props.apiUrl} /> */}
+        <Users apiUrl={this.props.apiUrl} />
       </div>
     );
   }

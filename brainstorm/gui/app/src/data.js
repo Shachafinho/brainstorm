@@ -1,29 +1,28 @@
 import React from 'react';
-import ReactLoading from 'react-loading';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 // === Components ===
 
 function DataLoader(props) {
   const data = useFetchData(props.url);
   if (!data) {
-    return <ReactLoading type="spinningBubbles" color="black" />;
+    return <CircularProgress />;
   }
-  return props.renderData(data);
+
+  const children = React.Children.toArray(props.children);
+  return children.map((child) => (
+    React.cloneElement(child, {
+      data: data,
+      ...child.props,
+    })
+  ));
 }
 
 // === Functions ===
 
-function sleep(ms) {
-  // TODO: DELETE ME
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 async function fetchJsonData(url) {
   return await fetch(url)
     .then(res => res.json())
-    .then(async data => {
-      return await sleep(1000).then(() => data);
-    })
     .catch(console.log);
 }
 
@@ -36,10 +35,14 @@ function useFetchData(url) {
     fetchJsonData(url).then(fetchedData => {
       setData(fetchedData);
     });
-  });
+  }, [url]);
   return data;
 }
 
 // === Exports ===
 
-export default DataLoader;
+// export default DataLoader;
+export {
+  DataLoader,
+  useFetchData,
+};

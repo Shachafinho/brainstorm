@@ -1,5 +1,9 @@
 import React from 'react';
-import DataLoader from './data.js';
+import Typography from '@material-ui/core/Typography';
+
+import { Collection, CollectionItem } from './collection.js';
+import { DataLoader } from './data.js';
+import { useStyles } from './style.js';
 import { getResultUrl } from './urls.js';
 
 // === Components ===
@@ -7,9 +11,15 @@ import { getResultUrl } from './urls.js';
 function ImageResult(props) {
   return (
     <div className="result-base-image">
-      Width: {props.width},
-      Height: {props.height},
-      Data: {props.data}
+      <Typography>
+        Width: {props.width}
+      </Typography>
+      <Typography>
+        Height: {props.height}
+      </Typography>
+      <Typography>
+        Data: {props.data}
+      </Typography>
     </div>
   )
 }
@@ -27,23 +37,13 @@ function ImageResult(props) {
 // }
 
 function ColorImageResult(props) {
-  function render(colorImage) {
-    return (
-      <div className="result-color-image">
-        <ImageResult
-          width={colorImage.width}
-          height={colorImage.height}
-          data={colorImage.data}
-        />
-      </div>
-    );
-  }
-
+  const colorImage = props.data;
   return (
     <>
-      <DataLoader
-        url={getResultUrl(props.apiUrl, props.userId, props.snapshotId, 'color_image')}
-        renderData={render}
+      <ImageResult
+        width={colorImage.width}
+        height={colorImage.height}
+        data={colorImage.data}
       />
     </>
   );
@@ -86,23 +86,13 @@ function ColorImageResult(props) {
 // }
 
 function DepthImageResult(props) {
-  function render(depthImage) {
-    return (
-      <div className="result-depth-image">
-        <ImageResult
-          width={depthImage.width}
-          height={depthImage.height}
-          data={depthImage.data}
-        />
-      </div>
-    );
-  }
-
+  const depthImage = props.data;
   return (
     <>
-      <DataLoader
-        url={getResultUrl(props.apiUrl, props.userId, props.snapshotId, 'depth_image')}
-        renderData={render}
+      <ImageResult
+        width={depthImage.width}
+        height={depthImage.height}
+        data={depthImage.data}
       />
     </>
   );
@@ -145,31 +135,21 @@ function DepthImageResult(props) {
 // }
 
 function FeelingsResult(props) {
-  function render(feelings) {
-    return (
-      <div className="result-feelings">
-        <div className="result-feeling-hunger">
-          Hunger: {feelings.hunger}
-        </div>
-        <div className="result-feeling-thirst">
-          Thirst: {feelings.thirst}
-        </div>
-        <div className="result-feeling-exhaustion">
-          Exhaustion: {feelings.exhaustion}
-        </div>
-        <div className="result-feeling-happiness">
-          Happiness: {feelings.happiness}
-        </div>
-      </div>
-    );
-  }
-
+  const feelings = props.data;
   return (
     <>
-      <DataLoader
-        url={getResultUrl(props.apiUrl, props.userId, props.snapshotId, 'feelings')}
-        renderData={render}
-      />
+      <Typography>
+        Hunger: {feelings.hunger}
+      </Typography>
+      <Typography>
+        Thirst: {feelings.thirst}
+      </Typography>
+      <Typography>
+        Exhaustion: {feelings.exhaustion}
+      </Typography>
+      <Typography>
+        Happiness: {feelings.happiness}
+      </Typography>
     </>
   );
 }
@@ -220,11 +200,7 @@ function FeelingsResult(props) {
 // }
 
 function Coordinate(props) {
-  return (
-    <>
-      {props.value.toFixed(3)}
-    </>
-  );
+  return <>{props.value.toFixed(3)}</>;
 }
 
 function TranslationResult(props) {
@@ -282,42 +258,63 @@ function RotationResult(props) {
 // }
 
 function PoseResult(props) {
-  function render(pose) {
-    const translation = pose.translation;
-    const rotation = pose.rotation;
-
-    return (
-      <div className="result-pose">
-        {translation &&
-          <TranslationResult
-            x={translation.x}
-            y={translation.y}
-            z={translation.z}
-          />
-        }
-        {rotation &&
-          <RotationResult
-            x={rotation.x}
-            y={rotation.y}
-            z={rotation.z}
-            w={rotation.w}
-          />
-        }
-      </div>
-    );
-  }
+  const translation = props.data.translation;
+  const rotation = props.data.rotation;
 
   return (
     <>
-      <DataLoader
-        url={getResultUrl(props.apiUrl, props.userId, props.snapshotId, 'pose')}
-        renderData={render}
+      <TranslationResult
+        x={translation.x}
+        y={translation.y}
+        z={translation.z}
+      />
+      <RotationResult
+        x={rotation.x}
+        y={rotation.y}
+        z={rotation.z}
+        w={rotation.w}
       />
     </>
   );
 }
 
-// class PoseResult2 extends React.Component {
+// function PoseResult(props) {
+//   function render(pose) {
+//     const translation = pose.translation;
+//     const rotation = pose.rotation;
+
+//     return (
+//       <div className="result-pose">
+//         {translation &&
+//           <TranslationResult
+//             x={translation.x}
+//             y={translation.y}
+//             z={translation.z}
+//           />
+//         }
+//         {rotation &&
+//           <RotationResult
+//             x={rotation.x}
+//             y={rotation.y}
+//             z={rotation.z}
+//             w={rotation.w}
+//           />
+//         }
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <DataLoader
+//         url={getResultUrl(props.apiUrl, props.userId, props.snapshotId, 'pose')}
+//         renderData={render}
+//       />
+//     </>
+//   );
+// }
+
+// class PoseResult3 extends React.Component {
 //   constructor(props) {
 //     super(props);
 //     this.state = {
@@ -364,38 +361,91 @@ function PoseResult(props) {
 //   }
 // }
 
-const resultComponents = {
-  'color_image': ColorImageResult,
-  'depth_image': DepthImageResult,
-  'feelings': FeelingsResult,
-  'pose': PoseResult,
-};
-
-function ResultCollection(props) {
-  const resultItems = props.results.map((result) => {
-    const ResultComponent = resultComponents[result];
-    return (
-      <li key={result}>
-        <ResultComponent
-          apiUrl={props.apiUrl}
-          userId={props.userId}
-          snapshotId={props.snapshotId}
-        />
-      </li>
-    )
-  });
-  const resultCollection = (resultItems.length > 0) ?
-    <ul>{resultItems}</ul> :
-    'No results...';
-
+function ResultHeader(props) {
+  const classes = useStyles();
   return (
-    <div className="result-collection">
-      {resultCollection}
-    </div>
+    <>
+      <Typography className={classes.heading}>
+        {props.name}
+      </Typography>
+    </>
   );
 }
 
-// class ResultCollection extends React.Component {
+function Result(props) {
+  const ResultComponent = getResultComponent(props.name);
+  return (
+    <>
+      <CollectionItem
+        onClick={props.onClick}
+        isExpanded={props.isExpanded}
+      >
+        <ResultHeader name={props.name} />
+        <DataLoader url={getResultUrl(props.apiUrl, props.userId, props.snapshotId, props.name)}>
+          <ResultComponent {...props} />
+        </DataLoader>
+      </CollectionItem>
+    </>
+  );
+}
+
+function ResultCollection(props) {
+  const [expanded, setExpanded] = React.useState(false);
+
+  const isExpanded = (resultName) => (resultName === expanded);
+  const handleClick = (resultName) => () => {
+    setExpanded(isExpanded(resultName) ? false : resultName);
+  };
+
+  const resultItems = props.results.map((resultName) => {
+    return (
+      <Result
+        key={resultName}
+        apiUrl={props.apiUrl}
+        userId={props.userId}
+        snapshotId={props.snapshotId}
+        name={resultName}
+        isExpanded={isExpanded(resultName)}
+        onClick={handleClick(resultName)}
+      />
+    );
+  });
+  const resultCollection = (resultItems.length > 0) ?
+    <>{resultItems}</> :
+    <>No results...</>;
+
+  return (
+    <Collection renderHeader={() => "Results"}>
+      {resultCollection}
+    </Collection>
+  );
+}
+
+// function ResultCollection2(props) {
+//   const resultItems = props.results.map((result) => {
+//     const ResultComponent = resultComponents[result];
+//     return (
+//       <li key={result}>
+//         <ResultComponent
+//           apiUrl={props.apiUrl}
+//           userId={props.userId}
+//           snapshotId={props.snapshotId}
+//         />
+//       </li>
+//     )
+//   });
+//   const resultCollection = (resultItems.length > 0) ?
+//     <ul>{resultItems}</ul> :
+//     'No results...';
+
+//   return (
+//     <div className="result-collection">
+//       {resultCollection}
+//     </div>
+//   );
+// }
+
+// class ResultCollection3 extends React.Component {
 //   render() {
 //     const resultItems = this.props.results.map((result) => {
 //       const ResultComponent = resultComponents[result];
@@ -421,6 +471,19 @@ function ResultCollection(props) {
 //     );
 //   }
 // }
+
+// === Functions ===
+
+const resultComponents = {
+  'color_image': ColorImageResult,
+  'depth_image': DepthImageResult,
+  'feelings': FeelingsResult,
+  'pose': PoseResult,
+};
+
+function getResultComponent(resultName) {
+  return resultComponents[resultName];
+}
 
 // === Exports ===
 

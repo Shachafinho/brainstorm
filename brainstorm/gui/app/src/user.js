@@ -1,6 +1,14 @@
 import React from 'react';
-import DataLoader from './data.js';
+// import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+// import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+// import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import Typography from '@material-ui/core/Typography';
+// import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
+import { Collection, CollectionItem } from './collection.js';
+import { DataLoader } from './data.js';
 import SnapshotCollection from './snapshot.js';
+import { useStyles } from './style.js';
 import { getUsersUrl, getUserUrl } from './urls.js';
 
 // === Components ===
@@ -10,67 +18,44 @@ function UserInformation(props) {
   const gender = getGenderString(props.gender);
 
   return (
-    <div className="user-information">
-      <div className="user-birthday">
+    <>
+      <Typography>
         Birthday: {birthday}
-      </div>
-      <div className="user-gender">
+        <br />
         Gender: {gender}
-      </div>
-    </div>
+      </Typography>
+    </>
   );
 }
-
-// class UserInformation2 extends React.Component {
-//   render() {
-//     const birthday = new Date(this.props.birthday).toLocaleDateString();
-//     const gender = getGenderString(this.props.gender);
-
-//     return (
-//       <div className="user-information">
-//         <div className="user-birthday">
-//           Birthday: {birthday}
-//         </div>
-//         <div className="user-gender">
-//           Gender: {gender}
-//         </div>
-//       </div>
-//     );
-//   }
-// }
 
 function UserHeader(props) {
+  const classes = useStyles();
+
   return (
-    <div className="user-header">
-      <div className="user-id">
-        {props.userId}
-      </div>
-      <div className="user-name">
+    <>
+      <Typography className={classes.heading}>
         {props.name}
-      </div>
-    </div>
+      </Typography>
+      <Typography className={classes.secondaryHeading}>
+        {props.userId}
+      </Typography>
+    </>
   );
 }
 
-// class UserHeader2 extends React.Component {
-//   render() {
-//     return (
-//       <div className="user-header">
-//         <div className="user-id">
-//           {this.props.userId}
-//         </div>
-//         <div className="user-name">
-//           {this.props.name}
-//         </div>
-//       </div>
-//     );
-//   }
-// }
+function UserWithData(props) {
+  const userData = props.data;
+  // const userData = useFetchData(getUserUrl(props.apiUrl, props.userId));
+  // if (!userData) {
+  //   return <><CircularProgress /></>;
+  // }
 
-function User(props) {
-  function renderUser(userData) {
-    return (
-      <div className="user">
+  return (
+    <>
+      <CollectionItem
+        onClick={props.onClick}
+        isExpanded={props.isExpanded}
+      >
         <UserHeader
           userId={props.userId}
           name={props.name}
@@ -83,92 +68,156 @@ function User(props) {
           apiUrl={props.apiUrl}
           userId={props.userId}
         />
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <DataLoader
-        url={getUserUrl(props.apiUrl, props.userId)}
-        renderData={renderUser}
-      />
+      </CollectionItem>
     </>
   );
 }
 
-// class User2 extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       birthday: '',
-//       gender: '',
-//     };
-//   }
+// function UserWithData2(props) {
+//   const userData = props.data;
+//   // const userData = useFetchData(getUserUrl(props.apiUrl, props.userId));
+//   // if (!userData) {
+//   //   return <><CircularProgress /></>;
+//   // }
 
-//   componentDidMount() {
-//     fetch(getUserUrl(this.props.apiUrl, this.props.userId))
-//     .then(res => res.json())
-//     .then((user) => {
-//       this.setState({
-//         birthday: user.birthday,
-//         gender: user.gender,
-//       })
-//     })
-//     .catch(console.log);
-//   }
+//   return (
+//     <>
+//       <ExpansionPanel
+//         expanded={props.isExpanded}
+//         onChange={props.onChange}
+//       >
+//         <ExpansionPanelSummary
+//           expandIcon={<ExpandMoreIcon />}
+//           id={`panel${props.userId}-header`}
+//         >
+//           <UserHeader
+//             userId={props.userId}
+//             name={props.name}
+//           />
+//         </ExpansionPanelSummary>
+//         <ExpansionPanelDetails>
+//           <div>
+//             <UserInformation
+//               birthday={userData.birthday}
+//               gender={userData.gender}
+//             />
+//             <SnapshotCollection
+//               apiUrl={props.apiUrl}
+//               userId={props.userId}
+//             />
+//           </div>
+//         </ExpansionPanelDetails>
+//       </ExpansionPanel>
+//     </>
+//   );
+// }
 
-//   render() {
+function User(props) {
+  return (
+    <DataLoader url={getUserUrl(props.apiUrl, props.userId)}>
+      <UserWithData {...props} />
+    </DataLoader>
+  );
+}
+
+function UserCollection(props) {
+  // const classes = useStyles();
+  const [expanded, setExpanded] = React.useState(false);
+
+  const isExpanded = (userId) => (userId === expanded);
+  const handleClick = (userId) => () => {
+    setExpanded(isExpanded(userId) ? false : userId);
+  };
+
+  // const handleChange = (panel) => (event, isExpanded) => {
+  //   setExpanded(isExpanded ? panel : false);
+  // };
+
+  // const users = useFetchData(getUsersUrl(props.apiUrl));
+  // if (!users) {
+  //   return <><CircularProgress /></>;
+  // }
+
+  const userItems = props.data.map((minimalUser) => {
+    const userId = minimalUser.user_id;
+    return (
+      <User
+        key={`${userId}`}
+        apiUrl={props.apiUrl}
+        userId={userId}
+        name={minimalUser.name}
+        isExpanded={isExpanded(userId)}
+        onClick={handleClick(userId)}
+      />
+    );
+  });
+  const userCollection = (userItems.length > 0) ?
+    <>{userItems}</> :
+    <>No users...</>;
+
+  // const renderUser = (minimalUser, expandedUserId, handleClick) => {
+  //   const userId = minimalUser.user_id;
+  //   return (
+  //     <User
+  //       key={`${userId}`}
+  //       apiUrl={props.apiUrl}
+  //       userId={userId}
+  //       name={minimalUser.name}
+  //       onClick={handleClick(userId)}
+  //       isExpanded={expandedUserId === userId}
+  //     />
+  //   );
+  // }
+  // const renderNoUsers = () => (
+  //   <>No users...</>
+  // );
+
+  return (
+    <Collection renderHeader={() => "Users"}>
+      {userCollection}
+    </Collection>
+  );
+}
+
+function Users(props) {
+  return (
+    <DataLoader url={getUsersUrl(props.apiUrl)}>
+      <UserCollection apiUrl={props.apiUrl} />
+    </DataLoader>
+  );
+}
+
+// function UserCollection(props) {
+//   function renderUsers(users) {
+//     const userItems = users.map((minimalUser) => (
+//       <li key={minimalUser.user_id.toString()}>
+//         <User
+//           apiUrl={props.apiUrl}
+//           userId={minimalUser.user_id}
+//           name={minimalUser.name}
+//         />
+//       </li>
+//     ));
+//     const userCollection = (userItems.length > 0) ?
+//       <ul>{userItems}</ul> :
+//       'No users...';
+
 //     return (
-//       <div className="user">
-//         <UserHeader
-//           userId={this.props.userId}
-//           name={this.props.name}
-//         />
-//         <UserInformation
-//           birthday={this.state.birthday}
-//           gender={this.state.gender}
-//         />
-//         <SnapshotCollection
-//           apiUrl={this.props.apiUrl}
-//           userId={this.props.userId}
-//         />
+//       <div className="user-collection">
+//         {userCollection}
 //       </div>
 //     );
 //   }
+
+//   return (
+//     <>
+//       <DataLoader
+//         url={getUsersUrl(props.apiUrl)}
+//         renderData={renderUsers}
+//       />
+//     </>
+//   );
 // }
-
-function UserCollection(props) {
-  function renderUsers(users) {
-    const userItems = users.map((minimalUser) => (
-      <li key={minimalUser.user_id.toString()}>
-        <User
-          apiUrl={props.apiUrl}
-          userId={minimalUser.user_id}
-          name={minimalUser.name}
-        />
-      </li>
-    ));
-    const userCollection = (userItems.length > 0) ?
-      <ul>{userItems}</ul> :
-      'No users...';
-
-    return (
-      <div className="user-collection">
-        {userCollection}
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <DataLoader
-        url={getUsersUrl(props.apiUrl)}
-        renderData={renderUsers}
-      />
-    </>
-  );
-}
 
 // === Functions ===
 
@@ -182,4 +231,5 @@ function getGenderString(gender) {
 
 // === Exports ===
 
-export default UserCollection;
+// export default UserCollection;
+export default Users;
