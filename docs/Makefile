@@ -5,8 +5,11 @@
 # from the environment for the first two.
 SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
+SPHINXGEN     ?= sphinx-apidoc
+SPHINXGENOPTS ?= $(SPHINX_APIDOC_OPTIONS)
 SOURCEDIR     = source
 BUILDDIR      = build
+CONFDIR       = config
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -14,7 +17,11 @@ help:
 
 .PHONY: help Makefile
 
+clean:
+	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" -c "$(CONFDIR)" $(SPHINXOPTS) $(O)
+
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@$(SPHINXGEN) -f -o "$(SOURCEDIR)" ../brainstorm $(SPHINXGENOPTS) -e
+	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" -c "$(CONFDIR)" $(SPHINXOPTS) $(O)

@@ -8,5 +8,7 @@ from .translation import Translation
 from .user_information import UserInformation
 
 
-__all__ = [ColorImage, DepthImage, Feelings, Pose, Rotation, Snapshot,
-           Translation, UserInformation]
+__all__ = [
+    'ColorImage', 'DepthImage', 'Feelings', 'Pose', 'Rotation', 'Snapshot',
+    'Translation', 'UserInformation',
+]

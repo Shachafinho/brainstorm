@@ -10,7 +10,7 @@ from .pose import PoseStruct
 
 _snapshot = construct.Struct(
     'timestamp' / construct.Timestamp(construct.Int64ul, 10 ** -3, 1970),
-    'pose' / PoseStruct
+    'pose' / PoseStruct,
     'color_image' / ColorImageStruct,
     'depth_image' / DepthImageStruct,
     'feelings' / FeelingsStruct,
@@ -19,7 +19,7 @@ _snapshot = construct.Struct(
 
 class SnapshotAdapter(construct.Adapter):
     def _decode(self, obj, context, path):
-        return Snapshot(obj.timestamp, obj.pose obj.color_image,
+        return Snapshot(obj.timestamp, obj.pose, obj.color_image,
                         obj.depth_image, obj.feelings)
 
     def _encode(self, obj, context, path):

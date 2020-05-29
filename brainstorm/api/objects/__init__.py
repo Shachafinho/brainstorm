@@ -13,8 +13,8 @@ from .user import User
 
 
 __all__ = [
-    BadRequestError, NotFoundError,
-    ColorImage, DepthImage, Feelings, Rotation, Pose, Translation,
-    MinimalSnapshot, Snapshot,
-    MinimalUser, User
+    'BadRequestError', 'NotFoundError',
+    'ColorImage', 'DepthImage', 'Feelings', 'Rotation', 'Pose', 'Translation',
+    'MinimalSnapshot', 'Snapshot',
+    'MinimalUser', 'User',
 ]

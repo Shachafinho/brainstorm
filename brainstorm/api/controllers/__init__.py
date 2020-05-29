@@ -7,7 +7,7 @@ from .users import get_users
 
 
 __all__ = [
-    get_users, get_user,
-    get_snapshots, get_snapshot,
-    get_result, get_result_data,
+    'get_users', 'get_user',
+    'get_snapshots', 'get_snapshot',
+    'get_result', 'get_result_data',
 ]

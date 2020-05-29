@@ -1,7 +1,6 @@
 .env/
 .pytest-cache/
 **/__pycache__
-docs/build/
 
 # Ignore data directories
 db_data/

@@ -5,5 +5,7 @@ from .focused_driver_manager import FocusedDriverManager
 from .focused_driver_manager import ModuleFocusedConfig
 
 
-__all__ = [ExhaustiveDriverManager, ExhaustiveConfig,
-           FocusedDriverManager, DirectoryFocusedConfig, ModuleFocusedConfig]
+__all__ = [
+    'ExhaustiveDriverManager', 'ExhaustiveConfig',
+    'FocusedDriverManager', 'DirectoryFocusedConfig', 'ModuleFocusedConfig',
+]
