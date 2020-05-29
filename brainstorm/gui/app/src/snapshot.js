@@ -226,7 +226,7 @@ function SnapshotCollection(props) {
     );
   });
   const snapshotCollection = (snapshotItems.length > 0) ?
-    <>{snapshotItems[0]}</> :
+    <>{snapshotItems}</> :
     <>No snapshots...</>;
 
   return (
