@@ -11,13 +11,13 @@ class Snapshot:
         :param timestamp:
         :type timestamp: arrow.Arrow
         :param pose: The user's position in 3D space and head pose.
-        :type pose: Pose
+        :type pose: brainstorm.common.Pose
         :param color_image:
-        :type color_image: ColorImage
+        :type color_image: brainstorm.common.ColorImage
         :param depth_image:
-        :type depth_image: DepthImage
+        :type depth_image: brainstorm.common.DepthImage
         :param feelings:
-        :type feelings: Feelings
+        :type feelings: brainstorm.common.Feelings
         '''
         self.timestamp = timestamp or arrow.utcnow()
         self.pose = pose
