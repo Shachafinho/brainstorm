@@ -71,7 +71,7 @@ class Handler:
     @_reraise_db_errors
     def save_user(self, user_obj):
         with self.connection:
-            return user.save_user(self.connection, user_obj)
+            user.save_user(self.connection, user_obj)
 
     @_reraise_db_errors
     def get_snapshots(self, user_id):
@@ -87,7 +87,7 @@ class Handler:
     @_reraise_db_errors
     def save_snapshot(self, user_id, snapshot_obj):
         with self.connection:
-            return snapshot.save_snapshot(
+            snapshot.save_snapshot(
                 self.connection, user_id, snapshot_obj)
 
     @_reraise_db_errors
@@ -106,6 +106,6 @@ class Handler:
     def save_result(self, user_id, snapshot_timestamp, result_name,
                     result_obj):
         with self.connection:
-            return results.save_result(
+            results.save_result(
                 self.connection, user_id, snapshot_timestamp, result_name,
                 result_obj)

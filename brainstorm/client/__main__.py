@@ -1,4 +1,5 @@
 import click
+import traceback
 
 from .client import upload_sample as _upload_sample
 
@@ -19,6 +20,8 @@ def upload_sample(host, port, sample_url):
         _upload_sample(host, port, sample_url)
     except ConnectionError as e:
         print(f'Failed to connect to server: {e}')
+    except Exception:
+        print(f'Unexpected error: {traceback.format_exc()}')
 
 
 if __name__ == '__main__':

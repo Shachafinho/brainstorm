@@ -1,4 +1,3 @@
-import functools
 import importlib
 import inspect
 import pathlib
@@ -10,6 +9,15 @@ from brainstorm.utils.paths import ROOT_DIR
 
 
 def extract_class_driver(obj, name_pattern=None):
+    """Return a class-typed driver from the given object, if exists.
+
+    Args:
+        obj (object): An object to extract the driver from.
+        name_pattern (str): A pattern against which the class name is matched.
+
+    Return:
+        None or object: The extracted driver, or None if none exists.
+    """
     name_pattern = name_pattern or r'.*'
 
     if not inspect.isclass(obj):
@@ -25,6 +33,16 @@ def extract_class_driver(obj, name_pattern=None):
 
 
 def extract_func_driver(obj, name_pattern=None):
+    """Return a func-typed driver from the given object, if exists.
+
+    Args:
+        obj (object): An object to extract the driver from.
+        name_pattern (str): A pattern against which the function name is
+          matched.
+
+    Return:
+        None or func: The extracted driver, or None if none exists.
+    """
     name_pattern = name_pattern or r'.*'
 
     if not inspect.isroutine(obj):
@@ -38,6 +56,18 @@ def extract_func_driver(obj, name_pattern=None):
 
 
 def extract_module_drivers(module, tag_field=None, driver_extractors=None):
+    """Return all drivers in the given module.
+
+    Args:
+        module (module): The module to be scanned for drivers.
+        tag_field (str): The field name holding the driver tag (name).
+        driver_extractors (list(func(object))): A collection of functions
+          capable of extracting a driver function from an object.
+
+    Return:
+        dict(str, func):
+          All drivers located inside the module.
+    """
     tag_field = tag_field or 'tag'
     driver_extractors = driver_extractors or \
         [extract_class_driver, extract_func_driver]
@@ -57,6 +87,9 @@ def extract_module_drivers(module, tag_field=None, driver_extractors=None):
 
 
 class ExhaustiveConfig:
+    """An exhaustive configuration to locate drivers in a directory.
+    """
+
     __slots__ = 'search_dir', 'module_pattern', 'module_drivers_extractor'
 
     def __init__(self, search_dir, module_pattern=None,
@@ -86,6 +119,15 @@ def _erronous_find_driver(driver_tag):
 
 
 class ExhaustiveDriverManager:
+    """A DriverManager using an exhaustive policy.
+
+    Exhaustive policy dictates that drivers **cannot** be immediately found
+    by their name. In other words, we have to (exhaustively) iterate over
+    numerous possibilities until the desired driver is found.
+
+    Each driver must still have its own unique tag/name.
+    """
+
     def __init__(self, config, drivers=None):
         drivers = _find_all_drivers(config) if drivers is None else drivers
         self._driver_manager = DriverManager(_erronous_find_driver, drivers)

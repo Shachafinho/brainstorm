@@ -7,6 +7,19 @@ DEFAULT_FORMAT = 'protobuf'
 
 
 def upload_sample(host, port, path):
+    """Read the sample and send it to the server.
+
+    Read the sample, specified by the given url: schema://path/to/sample.
+    URL schema denotes the sample format.
+    URL path/to/sample denotes the sample file location.
+
+    Then, send the sample to the server using the specified host and port.
+
+    Args:
+        host (str): Server hostname to which the sample is uploaded.
+        port (int): Server port to which the sample is uploaded.
+        path (str): URL of the sample, where the schema determines the format.
+    """
     format_tag = DEFAULT_FORMAT
     formatter = Formatter(format_tag)
 
@@ -25,7 +38,7 @@ def upload_sample(host, port, path):
 
                 print(f'Sending snapshot message: {snapshot}...')
                 connection.send_message(formatter.write_snapshot(snapshot))
-                print(f'Done sending snapshot message')
+                print('Done sending snapshot message')
 
                 print()
 

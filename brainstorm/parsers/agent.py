@@ -11,7 +11,18 @@ def _create_publishing_bound_parse(mq, bound_parse, output_topic):
 
 
 class Agent:
+    """An object responsible for running parsers on some message queue.
+    """
+
     def __init__(self, mq, parsers=None):
+        """Construct an Agent object.
+
+        Args:
+            mq (:class:`~brainstorm.message_queue.MessageQueue`):
+              A message queue object to operate on.
+            parsers (list(:class:`~brainstorm.parsers.Parser`)):
+              A collection of parsers to be run.
+        """
         self._mq = mq
         self._parsers = []
 
@@ -20,6 +31,12 @@ class Agent:
             self.bind(parser)
 
     def bind(self, parser):
+        """Register a parser to be run on the message queue.
+
+        Args:
+            parser (:class:`~brainstorm.parsers.Parser`): The parser to
+              be registered and run.
+        """
         bound_parser = BoundParser(parser)
         publishing_bound_parse = _create_publishing_bound_parse(
             self._mq, bound_parser, bound_parser.output_topic)
@@ -28,8 +45,22 @@ class Agent:
         self._parsers.append(parser)
 
     def run(self):
+        """Run all registered parsers on the message queue.
+        """
         self._mq.consume_forever()
 
     @classmethod
     def from_parsers_names(cls, mq, parsers_names):
+        """Construct an agent object from a collection of parser names.
+
+        Args:
+            mq (:class:`~brainstorm.message_queue.MessageQueue`):
+              A message queue object to operate on.
+            parsers_names (list(str)):
+              A collection of parser names to be run.
+
+        Return:
+            :class:`~brainstorm.parser.Agent`:
+              The constructed agent object.
+        """
         return cls(mq, map(Parser, parsers_names))

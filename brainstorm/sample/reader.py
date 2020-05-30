@@ -5,7 +5,18 @@ from brainstorm.formats.opener import get_opener
 
 
 class Reader:
+    """An object responsible for reading user information and snapshots from
+    sample files.
+    """
+
     def __init__(self, url):
+        """Construct a Reader object.
+
+        Args:
+            url (str): A URL representing the sample file to read.
+              The scheme determines the format of the sample file (e.g.
+              *protobuf*), whereas the path determines the local file path.
+        """
         self._stream = None
         self._format_reader = None
 
@@ -24,10 +35,22 @@ class Reader:
 
     @property
     def user_information(self):
+        """Read user information from the file.
+
+        Return:
+            :class:`~brainstorm.common.UserInformation`:
+              The read user information.
+        """
         return self._format_reader.user_information
 
     @property
     def snapshots(self):
+        """Read snapshots from the file.
+
+        Yield:
+            :class:`~brainstorm.common.Snapshot`:
+              The read snapshots.
+        """
         yield from self._format_reader.snapshots
 
 

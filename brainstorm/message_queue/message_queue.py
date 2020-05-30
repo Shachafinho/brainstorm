@@ -15,9 +15,21 @@ mq_manager = FocusedDriverManager(DirectoryFocusedConfig(
 
 
 class MessageQueue:
+    """A manager object to choose and relay a specific MQ implementation.
+    """
+
     DEFAULT_TOPIC = Topic().name
+    """Default topic to publish (consume) messages to (from)."""
 
     def __init__(self, url):
+        """Construct the MessageQueue manager object.
+
+        Args:
+            url (str): A URL representing the specific message queue to use.
+              The scheme determines the type of the message queue (e.g.
+              *rabbitmq*), whereas the host and port determine the address of
+              the message queue.
+        """
         url = furl(url)
         driver_cls = mq_manager.find_driver(url.scheme)
         self._driver = driver_cls(url)
@@ -30,14 +42,33 @@ class MessageQueue:
         return self._driver.__exit__(exc_type, exc_value, exc_traceback)
 
     def publish(self, message, topic=None, key=None):
+        """Publish a message to the message queue.
+
+        Args:
+            message (str): A message to publish to the message queue.
+            topic (str): The topic to which the message is published. Defaults
+              to :const:`~brainstorm.message_queue.MessageQueue.DEFAULT_TOPIC`.
+            key (str): Routing key for the message.
+        """
         topic = topic if topic is not None else self.DEFAULT_TOPIC
         self._driver.publish(message, topic, key)
 
     def subscribe(self, callback, topic=None, key=None):
+        """Register a callback to a topic of the message queue.
+
+        Args:
+            callback (func(str)): A callback to handle a consumed message.
+            topic (str): The topic to which the callback is registered.
+              The callback accepts messages consumed from this topic. Defaults
+              to :const:`~brainstorm.message_queue.MessageQueue.DEFAULT_TOPIC`.
+            key (str): Routing key for the message.
+        """
         topic = topic if topic is not None else self.DEFAULT_TOPIC
         self._driver.subscribe(callback, topic, key)
 
     def consume_forever(self):
+        """Consume messages and run registered callbacks indefinitely.
+        """
         self._driver.consume_forever()
 
 

@@ -1,7 +1,5 @@
 import sys
 
-import psycopg2
-
 from brainstorm.utils.functions import get_module_functions
 from brainstorm.database.objects import ColorImage
 from brainstorm.database.objects import DepthImage
@@ -9,18 +7,6 @@ from brainstorm.database.objects import Feelings
 from brainstorm.database.objects import Pose
 from brainstorm.database.objects import Rotation
 from brainstorm.database.objects import Translation
-
-
-# TODO: Remove
-'''
-    SELECT
-        (SELECT r.relname FROM pg_class r WHERE r.oid = c.conrelid) as table,
-        (SELECT array_agg(attname) FROM pg_attribute
-         WHERE attrelid = c.conrelid and ARRAY[attnum] <@ c.conkey) as col,
-        (SELECT r.relname FROM pg_class r WHERE r.oid = c.confrelid) as ftable
-    FROM pg_constraint c
-    WHERE c.confrelid = (SELECT oid FROM pg_class WHERE relname = 'snapshots');
-'''
 
 
 _GET_REFERENCING_TABLES = '''
@@ -88,7 +74,7 @@ def _get_supported_results(connection):
 
 def get_results(connection, user_id, snapshot_timestamp):
     supported_results = _get_supported_results(connection)
-    return [result for result in supported_results if \
+    return [result for result in supported_results if
             get_result(connection, user_id, snapshot_timestamp, result)]
 
 

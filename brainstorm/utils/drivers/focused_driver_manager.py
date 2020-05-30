@@ -1,7 +1,6 @@
 import functools
 import importlib
 import inspect
-import os
 import pathlib
 
 from .driver_manager import DriverManager
@@ -10,6 +9,9 @@ from brainstorm.utils.paths import ROOT_DIR
 
 
 class DirectoryFocusedConfig:
+    """A focused configuration to locate class-typed drivers in directories.
+    """
+
     __slots__ = 'search_dir', 'module_name', 'class_name'
 
     def __init__(self, search_dir, module_name, class_name):
@@ -30,6 +32,9 @@ class DirectoryFocusedConfig:
 
 
 class ModuleFocusedConfig:
+    """A focused configuration to locate module-typed drivers.
+    """
+
     __slots__ = 'search_dir'
 
     def __init__(self, search_dir):
@@ -53,6 +58,14 @@ def _find_focused_driver(tag, config):
 
 
 class FocusedDriverManager:
+    """A DriverManager using a focused policy.
+
+    Focused policy dictates that drivers can be immediately found (and thus
+    obtained) by their name. In other words, there is pre-known function to
+    translate a driver name to its location (path). No other drives are
+    considered.
+    """
+
     def __init__(self, config, drivers=None):
         find_driver = functools.partial(_find_focused_driver, config=config)
         self._driver_manager = DriverManager(find_driver, drivers)

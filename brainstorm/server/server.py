@@ -1,4 +1,3 @@
-import pathlib
 import threading
 import traceback
 
@@ -13,6 +12,14 @@ from brainstorm.utils import Listener
 
 class Handler(threading.Thread):
     def __init__(self, connection, publish):
+        """Construct a server handler.
+
+        Args:
+            connection (:class:`~brainstorm.utils.connection.Connection`):
+              A connection object to communicate with the associated client.
+            publish (func(str)): Function which accepts a message (str) and
+              publishes it to a message queue.
+        """
         super().__init__()
         self._conn = connection
         self._publish = publish
@@ -41,29 +48,50 @@ class Handler(threading.Thread):
         print('Done publishing whole data message')
 
     def run(self):
+        """Receive a sample and publish it to the message queue.
+
+        First, receive the format in which the sample is received.
+        Then, receive the sample's user information, followed by a snapshot.
+
+        Once the entire sample is received, publish both user and snapshot
+        information to the message queue.
+        """
         try:
-            print(f'Waiting for format message...')
+            print('Waiting for format message...')
             format_tag = self._get_format_tag()
             print(f'Got format message: {format_tag!r}')
             formatter = Formatter(format_tag)
 
-            print(f'Waiting for user message...')
+            print('Waiting for user message...')
             user_information = self._get_user_information(formatter)
             print(f'Got user message: {user_information}')
 
-            print(f'Waiting for snapshot message...')
+            print('Waiting for snapshot message...')
             snapshot = self._get_snapshot(formatter)
             print(f'Got snapshot message: {snapshot}')
 
             self._publish_whole_data_message(user_information, snapshot)
 
         except ConnectionError:
-            print(f'Client disconnected')
+            print('Client disconnected')
         except Exception:
             print(f'Unexpected error: {traceback.format_exc()}')
 
 
 def run_server(host, port, publish):
+    """Run a server to receive samples and publish them to a message queue.
+
+    The server listens on the specified host and port, and awaits a connection.
+
+    Once a connection is accepted, the server receives samples and then
+    publishes them to the message queue using the specified publish function.
+
+    Args:
+        host (str): Server hostname to listen on.
+        port (int): Server port to listen on.
+        publish (func(str)): Function which accepts a message (str) and
+          publishes it to a message queue.
+    """
     listener = Listener(port, host) if host else Listener(port)
 
     with listener:

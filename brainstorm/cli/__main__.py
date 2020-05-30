@@ -97,4 +97,3 @@ def get_result(host, port, user_id, snapshot_id, result_name, out_file):
 
 if __name__ == '__main__':
     main(prog_name=__package__)
-

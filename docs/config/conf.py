@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath(os.path.join('..', '..', 'brainstorm')))
 # -- Project information -----------------------------------------------------
 
 project = 'Brainstorm'
-copyright = '2019, Shachaf Ben Jakov'
+copyright = '2020, Shachaf Ben Jakov'
 author = 'Shachaf Ben Jakov'
 
 
