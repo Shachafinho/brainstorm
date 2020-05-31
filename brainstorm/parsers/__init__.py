@@ -43,7 +43,7 @@ Add a new parser
    return an :mod:`MQ object <brainstorm.message_queue.objects>` as a result.
 
 Example:
-    .. literalinclude:: ../../brainstorm/parsers/parsers/echo.py
+    .. literalinclude:: ../brainstorm/parsers/parsers/echo.py
 """
 
 from .bound_parser import BoundParser
