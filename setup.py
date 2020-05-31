@@ -7,7 +7,7 @@ setup(
     author='Shachaf Ben Jakov',
     description='Main project in Advanced-System-Design course',
     packages=find_packages(),
-    package_data={'brainstorm': ['gui/app/**/*', 'api/spec/**/*']},
+    include_package_data=True,
     install_requires=['click', 'flask'],
     tests_require=['pytest', 'pytest-cov'],
 )
