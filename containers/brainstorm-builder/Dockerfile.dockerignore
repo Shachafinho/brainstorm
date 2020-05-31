@@ -1,4 +1,5 @@
 # Ignore everything
 **/*
 !brainstorm
+brainstorm/gui/app/node_modules
 !requirements.txt
