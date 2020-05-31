@@ -1,3 +1,4 @@
+import multiprocessing
 import pathlib
 import signal
 import socket
@@ -5,18 +6,23 @@ import subprocess
 import threading
 import time
 
-from brainstorm.__main__ import run_server
+import pytest
+
+import brainstorm.server
 
 
-_SERVER_ADDRESS = '127.0.0.1', 5000
+_SERVER_ADDRESS = '127.0.0.1', 18000
 _ROOT = pathlib.Path(__file__).absolute().parent.parent / 'brainstorm'
+_MQ_ADDRESS = '127.0.0.1', 15672
+_MQ_URL = f'rabbitmq://{_MQ_ADDRESS[0]}:{_MQ_ADDRESS[1]}/'
 
 
-def test_server():
+@pytest.mark.skip
+def test_server(mq):
     host, port = _SERVER_ADDRESS
     process = subprocess.Popen(
-        ['python', '-m', _ROOT.name, 'run-server',
-         '--address', host, str(port), '--data-dir', 'data/'],
+        ['python', '-m', brainstorm.server.__package__, 'run-server',
+         '--host', host, '--port', str(port), _MQ_URL],
         stdout=subprocess.PIPE,
     )
     thread = threading.Thread(target=process.communicate)

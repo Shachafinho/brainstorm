@@ -4,10 +4,14 @@ import socket
 import subprocess
 import time
 
+import brainstorm.client
 
-_SERVER_ADDRESS = '127.0.0.1', 5000
+
+_SERVER_ADDRESS = '127.0.0.1', 18000
 _SERVER_BACKLOG = 1000
 _ROOT = pathlib.Path(__file__).absolute().parent.parent / 'brainstorm'
+_DATA_DIR = pathlib.Path(__file__).absolute().parent / 'data'
+_SAMPLE_URL = f'protobuf://{str(_DATA_DIR / "example.mind.gz")}'
 
 
 def test_client():
@@ -16,7 +20,8 @@ def test_client():
     try:
         time.sleep(0.1)
         host, port = _SERVER_ADDRESS
-        base_cmd = ['python', '-m', _ROOT.name, 'upload-thought']
+        base_cmd = ['python', '-m', brainstorm.client.__package__,
+                    'upload-sample']
         process = subprocess.Popen(
             base_cmd,
             stdout=subprocess.PIPE,
@@ -26,8 +31,7 @@ def test_client():
         assert b'usage' in stderr.lower()
 
         process = subprocess.Popen(
-            base_cmd + ['--address', host, str(port), '--user-id', '1',
-                        '--thought', 'I\'m hungry'],
+            base_cmd + ['--host', host, '--port', str(port), _SAMPLE_URL],
             stdout=subprocess.PIPE,
         )
         stdout, _ = process.communicate()

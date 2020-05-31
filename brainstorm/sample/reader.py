@@ -55,7 +55,7 @@ class Reader:
 
 
 if __name__ == '__main__':
-    path = '/home/user/Downloads/sample.mind.gz'
+    path = '/home/user/Downloads/example.mind.gz'
     format_tag = 'protobuf'
     with Reader(furl(scheme=format_tag, path=path)) as reader:
         print(reader.user_information)
