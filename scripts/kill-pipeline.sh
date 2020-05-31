@@ -25,5 +25,7 @@ declare -a CONTAINERS=( \
 docker stop ${CONTAINERS[@]}
 docker rm ${CONTAINERS[@]}
 
-sudo docker network rm my-net
-sudo docker volume rm ${VOLUMES[@]}
+# Uncomment the following lines to remove the networks and volumes as well
+# sudo docker network rm my-net
+# CAUTION: Removing the volumes means deleting EVERYTHING from the DB.
+# sudo docker volume rm ${VOLUMES[@]}
