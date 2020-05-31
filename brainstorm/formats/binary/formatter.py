@@ -27,14 +27,14 @@ class Formatter:
     def write_user_information(user_information_obj, output_obj=None):
         if output_obj is None:
             return UserInformationStruct.build(user_information_obj)
-        return UserInformationStruct.build_sream(
+        return UserInformationStruct.build_stream(
             user_information_obj, output_obj)
 
     @staticmethod
     def write_snapshot(snapshot_obj, output_obj=None):
         if output_obj is None:
             return SnapshotStruct.build(snapshot_obj)
-        return SnapshotStruct.build_sream(snapshot_obj, output_obj)
+        return SnapshotStruct.build_stream(snapshot_obj, output_obj)
 
 
 if __name__ == '__main__':
