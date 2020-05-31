@@ -1,5 +1,4 @@
 # Configuration file for the Sphinx documentation builder.
-# Used by ReadTheDocs.
 #
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
@@ -13,8 +12,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath(os.path.join('..', 'brainstorm')))
+sys.path.insert(0, os.path.abspath(os.path.join('..', '..', 'brainstorm')))
 
 
 # -- Project information -----------------------------------------------------
@@ -63,20 +61,3 @@ autosummary_generate = True
 autodoc_default_options = {
     'special-members': '__call__, __init__',
 }
-
-
-# -- ReadTheDocs hacks -------------------------------------------------------
-
-def run_apidoc(_):
-    from sphinx.ext import apidoc
-    apidoc.main([
-        '--force',
-        '--separate',
-        '--module-first',
-        '-o', '.',
-        '../brainstorm',
-    ])
-
-
-def setup(app):
-    app.connect('builder-inited', run_apidoc)
