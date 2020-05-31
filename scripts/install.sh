@@ -12,8 +12,8 @@ function main {
     .env/bin/pip install -r requirements.txt
 
     # Setup NodeJs
-    sudo apt install nodejs
-    sudo apt install npm
+    sudo apt install -y nodejs
+    sudo apt install -y npm
     npm update
     (cd brainstorm/gui/app/ && npm install)
 
