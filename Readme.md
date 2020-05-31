@@ -6,8 +6,8 @@
 See [full documentation](https://shachafinho-brainstorm.readthedocs.io/en/latest/).
 
 The main project for "Advanced System Design" course.\
-It simulates a brainstorm in the sense that each user (client) can share (upload) his thoughts with the central server.\
-A webserver is used to expose all of the shared thoughts, grouped by their owner.
+It simulates a brainstorm in the sense that each user (client) can share (upload) his cognitive snapshot with the central server.\
+A RESTful API server is used to expose all of the snapshots, which is consumed and visualized by an HTTP GUI server.
 
 
 ## Installation
