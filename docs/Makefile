@@ -6,7 +6,7 @@
 SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SPHINXGEN     ?= sphinx-apidoc
-SPHINXGENOPTS = --separate --module-first
+SPHINXGENOPTS = --force --separate --module-first
 SOURCEDIR     = source
 BUILDDIR      = build
 CONFDIR       = config
@@ -24,6 +24,6 @@ clean:
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
-	@$(SPHINXGEN) -f -o "$(SOURCEDIR)" "../brainstorm" $(SPHINXGENOPTS)
+	@$(SPHINXGEN) $(SPHINXGENOPTS) -o "$(SOURCEDIR)" "../brainstorm"
 	cp index.rst $(SOURCEDIR)
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" -c "$(CONFDIR)" $(SPHINXOPTS) $(O)

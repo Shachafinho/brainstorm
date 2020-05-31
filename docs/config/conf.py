@@ -58,4 +58,6 @@ html_static_path = ['_static']
 # -- Extensions configuration ------------------------------------------------
 
 autosummary_generate = True
-autoclass_content = 'both'
+autodoc_default_options = {
+    'special-members': '__call__, __init__',
+}
