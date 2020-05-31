@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/Shachafinho/brainstorm.svg?branch=master)](https://travis-ci.org/Shachafinho/brainstorm)
-[![Coverage](httos://codecov.io/gh/Shachafinho/brainstorm/branch/master/graph/badge.svg)](https://codecov.io/gh/Shachafinho/brainstorm)
+[![Coverage](https://codecov.io/gh/Shachafinho/brainstorm/branch/master/graph/badge.svg)](https://codecov.io/gh/Shachafinho/brainstorm)
 
 # Brainstorm
 
