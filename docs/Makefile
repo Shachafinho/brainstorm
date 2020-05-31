@@ -9,7 +9,7 @@ SPHINXGEN     ?= sphinx-apidoc
 SPHINXGENOPTS = --force --separate --module-first
 SOURCEDIR     = source
 BUILDDIR      = build
-CONFDIR       = config
+CONFDIR       = .
 
 # Put it first so that "make" without argument is like "make help".
 help:
