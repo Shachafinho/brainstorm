@@ -8,7 +8,7 @@ certifi==2019.9.11
 chardet==3.0.4
 Click==7.0
 clickclick==1.2.2
-codecov==2.0.15
+codecov==2.0.16
 connexion==2.6.0
 construct==2.9.45
 coverage==5.0
